@@ -3,12 +3,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 :root {
-  font-family:  sans-serif, "Roboto", system-ui, Avenir, Helvetica, Arial;
+  font-family: sans-serif, "Roboto", system-ui, Avenir, Helvetica, Arial;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
   font-synthesis: none;
@@ -22,6 +20,7 @@ a {
   color: white;
   text-decoration: inherit;
 }
+
 a:hover {
   color: white;
 }
@@ -65,10 +64,12 @@ button:hover {
 
   background-color: #916500;
 }
+
 button:focus,
 button:focus-visible {
   background-color: #916500;
 }
+
 button.rojo {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -81,28 +82,35 @@ button.rojo {
   color: white;
   background: #6C1313;
 }
+
 button.rojo:hover {
   background-color: #5a0f0f;
 }
+
 button.rojo:focus,
 button.rojo:focus-visible {
   background-color: #5a0f0f;
   outline: none;
   box-shadow: 0 0 0 2px rgba(108, 19, 19, 0.5);
 }
+
 button.rojo:active {
   background-color: #4a0c0c;
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE y Edge */
-  scrollbar-width: none;     /* Firefox */
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;             /* Chrome, Safari y Opera */
+  -ms-overflow-style: none;
+  /* IE y Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
-.NavLink{
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari y Opera */
+}
+
+.NavLink {
   color: #6C1313;
 }
 
@@ -112,6 +120,7 @@ button.rojo:active {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -127,13 +136,16 @@ button.rojo:active {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: white;
   }
+
   button {
 
     background-color: #CB972D;
   }
+
   button.rojo {
     background-color: #6C1313;
   }
