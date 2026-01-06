@@ -7,7 +7,7 @@ import { Table, EnrollmentModal, ConfirmDialog } from "../../components/ui";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const headers = ["titulo", "categoria", "horas", "modalidad", "acciones"];
+const headers = ["titulo", "categoria", "horas", "modalidad", "detalles"];
 
 const filters = {
   categoria: ["TICS", "Educativo", "Software", "Electrónica", "Congresos"],
@@ -97,7 +97,7 @@ export default function Cursos() {
       setError(null);
 
       let response;
-      
+
       // Si hay búsqueda, usar el endpoint de búsqueda
       if (query && query.trim().length > 0) {
         response = await searchCourses(query.trim(), pageRequested, pageSizeRequested, "activo", localStorage.getItem('token'));
@@ -107,7 +107,7 @@ export default function Cursos() {
           ? await getCourses(pageRequested, pageSizeRequested, "activo", category, localStorage.getItem('token'))
           : await getCourses(pageRequested, pageSizeRequested, "activo", null, localStorage.getItem('token'));
       }
-      
+
       // Manejar ambos formatos de respuesta
       const coursesArray = Array.isArray(response)
         ? response
@@ -124,7 +124,7 @@ export default function Cursos() {
         horas: course.requirements?.hours?.total?.toString() || "0",
         id: course.id,
         modalidad: course.requirements?.modality?.toString() || "No definida",
-        acciones: (
+        detalles: (
           <div className="flex gap-2">
             <button onClick={() => navigate(`/dashboard/curso/${course.id}`)}>
               <EyeIcon className="h-5 w-5 inline-block" />
@@ -177,7 +177,7 @@ export default function Cursos() {
         window.history.replaceState({}, document.title);
       }
     };
-    
+
     checkPendingEnrollment();
   }, [coursesLoaded, location.state]);
 
@@ -209,7 +209,7 @@ export default function Cursos() {
       } else if (value === "Cerrado") {
         statusValue = "inactivo";
       }
-      
+
       setStatusFilter(statusValue);
       // Resetear a página 1 cuando cambia el filtro
       loadCourses(categorySelected || "Todos", 1, pageSize, searchQuery);

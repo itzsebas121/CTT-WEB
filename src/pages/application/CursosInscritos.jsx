@@ -6,7 +6,7 @@ import { Table } from "../../components/ui";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const headers = ["titulo", "categoria", "fecha_inscripcion", "estado", "acciones"];
+const headers = ["titulo", "categoria", "fecha_inscripcion", "estado", "detalles"];
 
 // Filtros disponibles basados en la API
 const filters = {
@@ -33,7 +33,7 @@ export default function CursosInscritos() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const user = localStorage.getItem('user');
       if (!user) {
         navigate('/login');
@@ -45,7 +45,7 @@ export default function CursosInscritos() {
 
       // La respuesta tiene la estructura: { user_id, total, enrollments }
       const enrollmentsArray = response.enrollments || [];
-      
+
       // Transformar los datos para la tabla
       const transformedEnrollments = enrollmentsArray.map((enrollment) => {
         // Formatear la fecha de inscripción
@@ -64,9 +64,9 @@ export default function CursosInscritos() {
           id: enrollment.id,
           courseId: enrollment.id_course,
           courseImage: enrollment.course_image,
-          acciones: (
+          detalles: (
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => navigate(`/dashboard/curso/${enrollment.id_course}`)}
                 className="text-[#6C1313] hover:text-[#5a0f0f]"
                 title="Ver detalles del curso"
