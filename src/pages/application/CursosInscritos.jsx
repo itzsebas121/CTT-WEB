@@ -73,14 +73,18 @@ export default function CursosInscritos() {
               >
                 <EyeIcon className="h-5 w-5 inline-block" />
               </button>
-              <button
-                onClick={() => handleGeneratePaymentOrder(enrollment.id, enrollment.course_title)}
-                className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-3 py-1 rounded text-sm flex items-center gap-1"
-                title="Generar orden de pago"
-              >
-                <DocumentTextIcon className="h-4 w-4" />
-                <span>Generar Orden</span>
-              </button>
+              <label htmlFor="file_input"
+              className="w-full bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+              >Subir Comprobante</label>
+              <input
+              type="file"
+              className="hidden"
+                title="Subir comprobante de pago"
+                name="file_input"
+                id="file_input"
+                //TODO: Implementar función subir comprobante
+                //onClick={}
+              />
             </div>
           ),
         };
