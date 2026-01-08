@@ -33,7 +33,7 @@ export default function Login() {
             {loginType === 'local' ? (
               <a
                 type="button"
-                className={`flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-amber-950 
+                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-amber-950 
                   }`}
                 onClick={() => setLoginType('local')}
               >
@@ -42,7 +42,7 @@ export default function Login() {
             ) : (
               <a
                 type="button"
-                className={`flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-[#CB972D]`}
+                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-[#CB972D]`}
                 onClick={() => setLoginType('local')}
               >
                 Local
@@ -51,7 +51,7 @@ export default function Login() {
             {loginType === '365' ? (
               <a
                 type="button"
-                className={`flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-amber-950 
+                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-amber-950 
                   }`}
                 onClick={() => setLoginType('365')}
               >
@@ -60,7 +60,7 @@ export default function Login() {
             ) : (
               <a
                 type="button"
-                className={`flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-[#CB972D]`}
+                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-[#CB972D]`}
                 onClick={() => setLoginType('365')}
               >
                 365
