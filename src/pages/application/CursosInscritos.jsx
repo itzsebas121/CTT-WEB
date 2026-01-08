@@ -60,7 +60,7 @@ export default function CursosInscritos() {
           titulo: enrollment.course_title || "Sin título",
           categoria: enrollment.course_category || "Sin categoría",
           fecha_inscripcion: formattedDate,
-          estado: enrollment.status || "Pendiente",
+          estado: enrollment.status == "Interesado" ? "Pendiente" : "Anulado" || "Pendiente",
           id: enrollment.id,
           courseId: enrollment.id_course,
           courseImage: enrollment.course_image,
