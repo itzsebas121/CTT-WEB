@@ -3,6 +3,7 @@ import { MapPinIcon, EnvelopeIcon, ComputerDesktopIcon } from "@heroicons/react/
 import { useEffect } from "react"
 import AOS from "aos"
 import 'aos/dist/aos.css'
+import { FaX } from "react-icons/fa6";
 export default function Footer() {
   useEffect(() => {
               AOS.init({ duration: 1000, once: false });
@@ -43,7 +44,7 @@ export default function Footer() {
               <li>
                 <div>
                     <ComputerDesktopIcon className="agray h-5 w-5 inline-block mr-2" />
-                    <a href="#" className="agray">Plataforma Educativa</a>
+                    <a href="https://ctt-talleresfisei.uta.edu.ec/edu/login/index.php" className="agray">Plataforma Educativa</a>
                 </div>
               </li>
             </ul>

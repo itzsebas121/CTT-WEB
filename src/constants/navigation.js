@@ -2,8 +2,8 @@ import { DocumentMagnifyingGlassIcon, ComputerDesktopIcon } from '@heroicons/rea
 
 // Navegación principal del header
 export const headerNavigation = [
-  { id: 0, title: 'Verifica Tu Certificado', href: 'Ingresa aquí', icon: DocumentMagnifyingGlassIcon },
-  { id: 1, title: 'Plataforma Educativa', href: 'Ingresa aquí', icon: ComputerDesktopIcon },
+  { id: 0, title: 'Verifica Tu Certificado', href: 'https://ctt-talleresfisei.uta.edu.ec/edu/mod/customcert/verify_certificate.php', icon: DocumentMagnifyingGlassIcon },
+  { id: 1, title: 'Plataforma Educativa', href: 'https://ctt-talleresfisei.uta.edu.ec/edu/login/index.php', icon: ComputerDesktopIcon },
 ];
 
 // Navegación principal del navbar

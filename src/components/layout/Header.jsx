@@ -39,7 +39,7 @@ export default function Header() {
         }`}>
             <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
             <div className="hidden md:flex lg:flex lg:flex-1">
-                <a href="#" className="-m-1.5 p-1.5">
+                <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5">
                 <img
                     alt=""
                     src="src/assets/logoUTA.webp"
@@ -55,7 +55,7 @@ export default function Header() {
             
             {/* Logo CTT - Solo en desktop */}
             <div className="lg:flex lg:flex-1 lg:justify-end">
-                <a href="#" className="-m-1.5 p-1.5">
+                <a href="https://uta.edu.ec/ctt-fisei/" className="-m-1.5 p-1.5">
                     <img
                         alt="CTT Logo"
                         src="src/assets/logoCTT.webp"
@@ -64,9 +64,9 @@ export default function Header() {
                 </a>
             </div>
             <div className=" flex flex-1 lg:hidden md:hidden pl-10">
-                <a href="#" className="-m-1.5 p-1.5">
+                <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5">
                 <img
-                    alt=""
+                    alt="UTA Logo"
                     src="src/assets/logoUTAPequeño.png"
                     className="h-15 w-auto min-w-30"
                 />
