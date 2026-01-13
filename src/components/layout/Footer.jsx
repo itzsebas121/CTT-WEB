@@ -59,9 +59,9 @@ export default function Footer() {
           </div>
           <div className="text-center md:text-left">
             <h3 className="text-white font-semibold mb-3">Redes Sociales</h3>
-            <div className="mt-6 flex justify-center space-x-6">
-              <a href="#" className="hover:text-white"><FaFacebook /></a>
-              <a href="#" className="hover:text-white"><FaInstagram />  </a>
+            <div className="mt-6 flex justify-start space-x-6">
+              <a href="https://www.facebook.com/UniversidadTecnicadeAmbatoOficial" className="hover:text-white"><FaFacebook /></a>
+              <a href="https://www.instagram.com/utecnicaambato/" className="hover:text-white"><FaInstagram />  </a>
               <a href="#" className="hover:text-white"><FaTwitter /></a>
             </div>
             <h3 className="text-white font-semibold mb-3 mt-5">Información</h3>
