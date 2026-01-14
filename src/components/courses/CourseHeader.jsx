@@ -11,7 +11,7 @@ export default function CourseHeader({ course, onEnroll, enrolling }) {
                 />
                 <div className="absolute top-4 left-4">
                     <span className="bg-[#6C1313] text-white px-3 py-1 rounded-full text-xl font-medium">
-                        {course.category}
+                        {course.category_name}
                     </span>
                 </div>
                 <div className="absolute top-4 right-4">
