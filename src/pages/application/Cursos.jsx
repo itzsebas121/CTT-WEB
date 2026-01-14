@@ -22,7 +22,7 @@ export default function Cursos() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [categorySelected, setCategorySelected] = useState(null);
-  const [statusFilter, setStatusFilter] = useState(null);
+  const [setStatusFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [enrolling, setEnrolling] = useState(false);
   const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);

@@ -55,7 +55,7 @@ export default function CourseDetail() {
 
   const handleEnroll = useCallback(async () => {
     setShowEnrollConfirm(false);
-    const token = localStorage.getItem("token");
+    //const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
 
     try {

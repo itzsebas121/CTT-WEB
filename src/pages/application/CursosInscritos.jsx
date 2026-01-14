@@ -22,12 +22,12 @@ export default function CursosInscritos() {
   const [statusFilter, setStatusFilter] = useState(null);
   const navigate = useNavigate();
 
-  const handleGeneratePaymentOrder = (enrollmentId, courseName) => {
+  /*const handleGeneratePaymentOrder = (enrollmentId, courseName) => {
     // Aquí puedes implementar la lógica para generar la orden de pago
     console.log('Generar orden de pago para inscripción:', enrollmentId, courseName);
     // TODO: Implementar lógica de generación de orden de pago
     alert(`Generar orden de pago para: ${courseName}`);
-  };
+  };*/
 
   const loadEnrollments = async (enrollmentStatus = null) => {
     try {
