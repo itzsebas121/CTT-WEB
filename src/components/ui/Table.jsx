@@ -40,7 +40,7 @@ export default function Table({
       onFilterChange(column, null);
     }
   };
-
+//TODO: Refactorizar 
   // Datos filtrados: solo si NO hay onSearchChange (búsqueda local)
   const filteredData = useMemo(() => {
     // Si hay búsqueda del servidor, no filtrar localmente
@@ -176,7 +176,7 @@ export default function Table({
       </div>
 
       {/* Paginación dentro de Table */}
-      <div className="flex items-center justify-between mt-3">
+      <div className="flex items-center flex-col mt-3">
         <div className="text-sm text-gray-700">
           {loading
             ? "Cargando..."

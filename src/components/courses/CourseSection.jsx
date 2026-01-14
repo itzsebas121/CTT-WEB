@@ -125,7 +125,7 @@ export default function CourseSection() {
                   }`}
                   strokeWidth={0.5}
                 />
-                <span>{category.text}</span>
+                <span>{category.name}</span>
                 <div className="mt-2 button">
                   <ArrowRightEndOnRectangleIcon
                     className="h-6 w-6 text-white"
@@ -135,7 +135,7 @@ export default function CourseSection() {
               </button>
             ))}
           </div>
-          <div className="flex justify-center items-center absolute right-3 top-1/2 z-[999]">
+          <div className="flex justify-center items-center absolute right-3 top-18 z-[999]">
             <button
               onClick={handleScrollRight}
               className=" h-15 md:hidden bg-gray-50/50 hover:bg-gray-50/75 transition-all rounded-full p-3 shadow-md "

@@ -6,6 +6,7 @@ import { enrollInCourse } from "../api/inscripciones";
 import { CourseHeader, CourseContent, CourseRequirements, CourseSidebar, CourseDates, CourseObjetives, CourseMaterials } from "../components/courses";
 import { EnrollmentModal, ConfirmDialog } from "../components/ui";
 
+
 export default function CourseDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -171,7 +172,7 @@ export default function CourseDetail() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <button
                     onClick={handleGoBack}
-                    className="flex items-center text-[#6C1313] hover:text-[#5a0f0f] transition-colors font-medium"
+                    className="flex items-center text-[#6C1313] hover:text-[#5a0f0f] transition-colors font-medium justify-end"
                 >
                     <ArrowLeftIcon className="h-5 w-5 mr-2" />
                     Volver a Cursos

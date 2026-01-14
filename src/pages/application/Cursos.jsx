@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { getCourses, getCoursesByCategory, searchCourses } from "../../api/courses";
+import { getCourses, searchCourses } from "../../api/courses";
 import { enrollInCourse } from "../../api/inscripciones";
 import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate, useLocation } from "react-router-dom";

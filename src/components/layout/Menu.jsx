@@ -4,7 +4,7 @@ import { dashboardMenuItems } from '../../constants/navigation'
 import { getUser, clearAuthData } from '../../utils/auth'
 import { ConfirmDialog } from '../ui'
 
-export default function Menu ({ items }) {
+export default function Menu () {
   const [isOpen, setIsOpen] = useState(false)
   const [user, setUser] = useState(null)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
@@ -39,7 +39,7 @@ export default function Menu ({ items }) {
       {/* Botón hamburguesa - solo visible en pantallas pequeñas y medianas */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#6C1313] text-white rounded"
+        className="lg:hidden fixed top-1 left-2 z-50 p-2 bg-[#6C1313] text-white rounded"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isOpen ? (
