@@ -4,13 +4,16 @@ import { enrollInCourse } from "../../api/inscripciones";
 import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Table, EnrollmentModal, ConfirmDialog } from "../../components/ui";
+import { getCategoriesEnabled } from "../../api/categories";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 const headers = ["titulo", "categoria", "horas", "modalidad", "detalles"];
-
+const categoryOptions = await getCategoriesEnabled();
 const filters = {
-  categoria: ["TICS", "Educativo", "Software", "Electrónica", "Congresos"],
+  categoria: categoryOptions
+    ? [...categoryOptions.map((cat) => cat.name)]
+    : ["Todos"],
 };
 
 export default function Cursos() {
@@ -112,6 +115,7 @@ export default function Cursos() {
       const coursesArray = Array.isArray(response)
         ? response
         : response?.courses || [];
+      console.log('Cursos cargados:', coursesArray);
       const respTotal = response?.total ?? (Array.isArray(response) ? response.length : 0);
       const respPageSize = response?.page_size ?? pageSizeRequested;
       const respTotalPages = response?.total_pages ?? Math.max(1, Math.ceil(respTotal / respPageSize));
@@ -119,7 +123,7 @@ export default function Cursos() {
       // Transformar los datos de la API para que coincidan con la estructura esperada por CardCourse
       const transformedCourses = coursesArray.map((course) => ({
         titulo: course.title,
-        categoria: course.category || "Sin categoría",
+        categoria: course.category_name || "Sin categoría",
         status: course.status,
         horas: course.requirements?.hours?.total?.toString() || "0",
         id: course.id,
