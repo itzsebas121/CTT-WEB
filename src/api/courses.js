@@ -40,7 +40,7 @@ export const getCourses = async (page = 1, pageSize = 10, status = null, categor
 };
 
 
-export const getCoursesByCategory = async (category, page = 1, pageSize = 10, status = null) => {
+export const getCoursesByCategory = async (category_id, page = 1, pageSize = 10, status = null) => {
     try {
         const params = {
             page,
@@ -52,7 +52,7 @@ export const getCoursesByCategory = async (category, page = 1, pageSize = 10, st
             params.status = status.toLowerCase();
         }
         
-        const response = await api.get(`/courses/category/${encodeURIComponent(category)}`, { params });
+        const response = await api.get(`/courses/category/${encodeURIComponent(category_id)}`, { params });
         const data = response.data;
 
         if (!data.courses) {

@@ -14,15 +14,8 @@ import { useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { getCourses, getCoursesByCategory } from "../../api/courses";
-
-const categories = [
-  { id: 0, text: "Todos", icon: Squares2X2Icon, status: "true" },
-  { id: 1, text: "TICS", icon: ComputerDesktopIcon, status: "false" },
-  { id: 2, text: "Educativo", icon: BuildingLibraryIcon, status: "false" },
-  { id: 3, text: "Software", icon: CommandLineIcon, status: "false" },
-  { id: 4, text: "Electrónica", icon: CpuChipIcon, status: "false" },
-  { id: 5, text: "Congresos", icon: UsersIcon, status: "false" },
-];
+import { getCategoriesEnabled } from "../../api/categories";
+import { IconsManifest } from "react-icons";
 
 export default function CourseSection() {
   const navigate = useNavigate();
@@ -32,16 +25,34 @@ export default function CourseSection() {
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("Todos");
   const inputref = useRef(null);
+  const [categoriesApi, setCategoriesApi] = useState([]); 
 
-  const loadCourses = async (category = null) => {
+  const loadCategories = async () => {
+    try{
+      const categoriesApi = await getCategoriesEnabled();
+      const allCategories = [{
+        id: 0,
+        name: "Todos",
+        svgurl: null
+      },
+        ...categoriesApi
+      ];
+      console.log('Loaded categories:', allCategories);
+      setCategoriesApi(allCategories);
+    }catch(err){
+      console.error("Error loading categories:", err);
+    } 
+  }
+
+  const loadCourses = async (categoryId = null) => {
     try {
       setLoading(true);
       setError(null);
 
       // Obtener solo 3 cursos para la sección de inicio
       const data =
-        category && category !== "Todos"
-          ? await getCoursesByCategory(category, 1, 3, "activo")
+        categoryId && categoryId !== "Todos"
+          ? await getCoursesByCategory(categoryId, 1, 3, "activo")
           : await getCourses(1, 3, "activo");
 
       // Transformar los datos de la API
@@ -62,11 +73,11 @@ export default function CourseSection() {
     }
   };
 
-  const handleCategoryChange = async (category) => {
-    setActiveCategory(category);
+  const handleCategoryChange = async (categoryId) => {
+    setActiveCategory(categoryId);
     // Si es "Todos", no pasamos categoría para obtener todos los cursos
     // Si es otra categoría, la pasamos para filtrar
-    await loadCourses(category === "Todos" ? null : category);
+    await loadCourses(categoryId === 0 ? null : categoryId);
   };
 
   const handleViewMoreCourses = () => {
@@ -89,6 +100,7 @@ export default function CourseSection() {
   useEffect(() => {
     AOS.init({ duration: 1000, once: false, mirror: true });
     AOS.refresh();
+    loadCategories();
     loadCourses();
   }, []);
   return (
@@ -105,26 +117,38 @@ export default function CourseSection() {
             ref={inputref}
             className="mt-6 flex flex-around gap-x-10 px-6 gap-y-4 overflow-x-auto whitespace-nowrap scrollbar-hide"
           >
-            {categories.map((category) => (
+            {categoriesApi.map((category) => (
               <button
                 key={category.id}
                 style={{
                   backgroundColor:
-                    activeCategory === category.text ? "#6C1313" : "#F5F5F5",
-                  color: activeCategory === category.text ? "white" : "#6C1313",
+                    activeCategory === category.name ? "#6C1313" : "#F5F5F5",
+                  color: activeCategory === category.name ? "white" : "#6C1313",
                 }}
                 className="flex flex-col items-center justify-center text-center min-w-[150px] transition-all duration-200 hover:opacity-80"
-                onClick={() => handleCategoryChange(category.text)}
+                onClick={() => handleCategoryChange(category.id)}
                 data-aos="zoom-in"
               >
-                <category.icon
-                  className={`h-20 w-20 mb-1 ${
-                    activeCategory === category.text
+                {category.svgurl ?(
+                  <img
+                    src={category.svgurl}
+                    alt={category.name}
+                    className={`h-20 w-20 mb-1 ${
+                      activeCategory === category.name
+                        ? "brightness-0 invert"
+                        : ""
+                    }`}
+                />
+                ) : (
+                  <Squares2X2Icon
+                    className={`h-20 w-20 mb-1 ${
+                      activeCategory === category.name
                       ? "text-white"
                       : "text-[#6C1313]"
-                  }`}
-                  strokeWidth={0.5}
-                />
+                    }`}
+                    strokeWidth={0.5}
+                  />
+                )}
                 <span>{category.name}</span>
                 <div className="mt-2 button">
                   <ArrowRightEndOnRectangleIcon
