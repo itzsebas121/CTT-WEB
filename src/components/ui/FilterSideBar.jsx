@@ -9,6 +9,8 @@ import {
   XMarkIcon,
   UsersIcon
 } from "@heroicons/react/24/outline";
+import { getCategoriesEnabled } from "../../api/categories";
+
 
 const categories = [
   { id: 1, text: "TICS", icon: ComputerDesktopIcon },
@@ -18,6 +20,12 @@ const categories = [
   { id: 5, text: "Congresos", icon: UsersIcon },
 ];
 
+const categoriesApi=await getCategoriesEnabled();
+const fetchEnabledCategories = categoriesApi.map((cat) => ({
+  id: cat.id,
+  text: cat.name,
+  icon: CpuChipIcon, // Icono por defecto si no se encuentra
+}));
 export default function FilterSidebar({ filters, setFilters }) {
   const [open, setOpen] = useState(false);
 
@@ -111,14 +119,14 @@ export default function FilterSidebar({ filters, setFilters }) {
             </span>
           </label>
 
-          {categories.map((cat) => (
+          {fetchEnabledCategories.map((cat) => (
             <label key={cat.id} className="flex items-center gap-3 cursor-pointer group transition-all duration-200 hover:bg-gray-50 p-2 rounded-lg -m-2">
               <div className="relative">
                 <input
                   type="radio"
                   name="category"
-                  value={cat.text}
-                  checked={filters.category === cat.text}
+                  value={cat.id}
+                  checked={filters.category === cat.id}
                   onChange={(e) => handleChange("category", e.target.value)}
                   className="sr-only"
                 />

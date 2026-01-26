@@ -23,7 +23,7 @@ export default function CourseSection() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("Todos");
+  const [activeCategory, setActiveCategory] = useState(0);
   const inputref = useRef(null);
   const [categoriesApi, setCategoriesApi] = useState([]); 
 
@@ -122,8 +122,8 @@ export default function CourseSection() {
                 key={category.id}
                 style={{
                   backgroundColor:
-                    activeCategory === category.name ? "#6C1313" : "#F5F5F5",
-                  color: activeCategory === category.name ? "white" : "#6C1313",
+                    activeCategory === category.id ? "#6C1313" : "#F5F5F5",
+                  color: activeCategory === category.id ? "white" : "#6C1313",
                 }}
                 className="flex flex-col items-center justify-center text-center min-w-[150px] transition-all duration-200 hover:opacity-80"
                 onClick={() => handleCategoryChange(category.id)}
@@ -134,7 +134,7 @@ export default function CourseSection() {
                     src={category.svgurl}
                     alt={category.name}
                     className={`h-20 w-20 mb-1 ${
-                      activeCategory === category.name
+                      activeCategory === category.id
                         ? "brightness-0 invert"
                         : ""
                     }`}
@@ -142,7 +142,7 @@ export default function CourseSection() {
                 ) : (
                   <Squares2X2Icon
                     className={`h-20 w-20 mb-1 ${
-                      activeCategory === category.name
+                      activeCategory === category.id
                       ? "text-white"
                       : "text-[#6C1313]"
                     }`}
@@ -159,10 +159,10 @@ export default function CourseSection() {
               </button>
             ))}
           </div>
-          <div className="flex justify-center items-center absolute right-3 top-18 z-[999]">
+          <div className="flex justify-center items-center absolute right-3 top-18 z-[999] bg-gray-50/50">
             <button
               onClick={handleScrollRight}
-              className=" h-15 md:hidden bg-gray-50/50 hover:bg-gray-50/75 transition-all rounded-full p-3 shadow-md "
+              className=" h-15 bg-gray-50/50 hover:bg-gray-50/75 transition-all rounded-full p-3 shadow-md "
             >
               <ChevronRightIcon
                 className="h-6 w-6 text-[#6C1313]"
@@ -235,14 +235,14 @@ export default function CourseSection() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium text-gray-800 mb-2">
-                  {activeCategory === "Todos"
+                  {activeCategory === 0
                     ? "Sin cursos disponibles"
                     : "Categoría sin cursos"}
                 </h3>
                 <p className="text-gray-500 text-sm leading-relaxed">
-                  {activeCategory === "Todos"
+                  {activeCategory === 0
                     ? "Actualmente no hay cursos disponibles. Te notificaremos cuando se agreguen nuevos contenidos."
-                    : `No encontramos cursos para "${activeCategory}". Prueba con otra categoría o revisa más tarde.`}
+                    : `No encontramos cursos para "${categoriesApi.find(cat => cat.id === activeCategory)?.name|| 'esta categoría'}". Prueba con otra categoría o revisa más tarde.`}
                 </p>
               </div>
             </div>
