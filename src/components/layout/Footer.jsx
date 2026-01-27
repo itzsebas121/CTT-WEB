@@ -1,4 +1,5 @@
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { MapPinIcon, EnvelopeIcon, ComputerDesktopIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react"
 import AOS from "aos"
@@ -62,7 +63,7 @@ export default function Footer() {
             <div className="mt-6 flex justify-start space-x-6">
               <a href="https://www.facebook.com/UniversidadTecnicadeAmbatoOficial" className="hover:text-white"><FaFacebook /></a>
               <a href="https://www.instagram.com/utecnicaambato/" className="hover:text-white"><FaInstagram />  </a>
-              <a href="#" className="hover:text-white"><FaTwitter /></a>
+              <a href="https://x.com/UTecnicaAmbato" className="hover:text-white"><FaXTwitter/></a>
             </div>
             <h3 className="text-white font-semibold mb-3 mt-5">Información</h3>
             <button className="text-sm"> Solicitar información CTT</button>

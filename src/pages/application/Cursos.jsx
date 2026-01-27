@@ -3,18 +3,13 @@ import { getCourses, searchCourses } from "../../api/courses";
 import { enrollInCourse } from "../../api/inscripciones";
 import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Table, EnrollmentModal, ConfirmDialog } from "../../components/ui";
+import { Table, EnrollmentModal, ConfirmDialog, RoleSelectionModal,PdfUploadModal } from "../../components/ui";
 import { getCategoriesEnabled } from "../../api/categories";
+import {uploadDocumentForEnrollment} from "../../api/inscripciones";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 const headers = ["titulo", "categoria", "horas", "modalidad", "detalles"];
-const categoryOptions = await getCategoriesEnabled();
-const filters = {
-  categoria: categoryOptions
-    ? [...categoryOptions.map((cat) => cat.name)]
-    : ["Todos"],
-};
 
 export default function Cursos() {
   const [courses, setCourses] = useState([]);
@@ -26,6 +21,8 @@ export default function Cursos() {
   const [totalPages, setTotalPages] = useState(1);
   const [categorySelected, setCategorySelected] = useState(null);
   const [setStatusFilter] = useState(null);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [filters, setFilters] = useState({ categoria: [] });
   const [searchQuery, setSearchQuery] = useState("");
   const [enrolling, setEnrolling] = useState(false);
   const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
@@ -36,6 +33,10 @@ export default function Cursos() {
   const [isInitialMount, setIsInitialMount] = useState(true);
   const [showEnrollConfirm, setShowEnrollConfirm] = useState(false);
   const [pendingEnrollment, setPendingEnrollment] = useState(null);
+  const [showRolSelection, setShowRolSelection] = useState(false);
+  const [showPdfUpload, setShowPdfUpload] = useState(false);
+  const [isExpositor, setIsExpositor] = useState(false);
+  const [documentFile, setDocumentFile] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,8 +57,24 @@ export default function Cursos() {
 
     // Guardar datos y mostrar confirmación
     setPendingEnrollment({ courseId, courseName });
-    setShowEnrollConfirm(true);
+    setShowRolSelection(true);
   };
+
+  const handleRoleSelection = (role) => {
+    setShowRolSelection(false);
+    setIsExpositor(role === 'expositor');
+    if(role === 'expositor'){
+      setShowPdfUpload(true);
+    } else {
+      setShowEnrollConfirm(true);
+    }
+  };
+
+  const handleDocumentUpload = (file) => {
+    setDocumentFile(file);
+    setShowPdfUpload(false);
+    setShowEnrollConfirm(true);
+  }
 
   const handleEnroll = useCallback(async (courseId, courseName) => {
     setShowEnrollConfirm(false);
@@ -67,6 +84,9 @@ export default function Cursos() {
       setEnrollmentError(null);
       const user = localStorage.getItem('user');
       const userData = JSON.parse(user);
+      if (isExpositor && documentFile) {
+        await uploadDocumentForEnrollment(documentFile);
+      }
       const response = await enrollInCourse(userData.id, parseInt(courseId));
       setEnrollmentData(response);
       setSelectedCourseName(courseName);
@@ -86,8 +106,10 @@ export default function Cursos() {
     } finally {
       setEnrolling(false);
       setPendingEnrollment(null);
+      setIsExpositor(false);
+      setDocumentFile(null);
     }
-  }, [navigate, categorySelected, page, pageSize, searchQuery]);
+  }, [navigate, categorySelected, page, pageSize, searchQuery,documentFile,isExpositor]);
 
   const loadCourses = async (
     category = "Todos",
@@ -100,6 +122,7 @@ export default function Cursos() {
       setError(null);
 
       let response;
+      const categoryParam = category && category !== "Todos" ? category : null;
 
       // Si hay búsqueda, usar el endpoint de búsqueda
       if (query && query.trim().length > 0) {
@@ -107,7 +130,7 @@ export default function Cursos() {
       } else {
         // Si no hay búsqueda, usar la lógica existente
         response = category && category !== "Todos"
-          ? await getCourses(pageRequested, pageSizeRequested, "activo", category, localStorage.getItem('token'))
+          ? await getCourses(pageRequested, pageSizeRequested, "activo", categoryParam, localStorage.getItem('token'))
           : await getCourses(pageRequested, pageSizeRequested, "activo", null, localStorage.getItem('token'));
       }
 
@@ -115,7 +138,6 @@ export default function Cursos() {
       const coursesArray = Array.isArray(response)
         ? response
         : response?.courses || [];
-      console.log('Cursos cargados:', coursesArray);
       const respTotal = response?.total ?? (Array.isArray(response) ? response.length : 0);
       const respPageSize = response?.page_size ?? pageSizeRequested;
       const respTotalPages = response?.total_pages ?? Math.max(1, Math.ceil(respTotal / respPageSize));
@@ -158,8 +180,22 @@ export default function Cursos() {
   };
 
   useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categories = await getCategoriesEnabled();
+        setCategoryOptions(categories || []);
+        // Actualizar filtros con los nombres de las categorías
+        setFilters({
+          categoria: categories ? categories.map((cat) => cat.name) : [],
+        });
+      } catch (err) {
+        console.error('Error al cargar categorías:', err);
+      }
+    };
+
     AOS.init({ duration: 1000, once: false, mirror: true });
     AOS.refresh();
+    loadCategories();
     loadCourses();
     setIsInitialMount(false);
   }, []);
@@ -175,7 +211,7 @@ export default function Cursos() {
           console.log('Mostrando confirmación de inscripción:', courseId, courseName);
           // Mostrar diálogo de confirmación en lugar de inscribir automáticamente
           setPendingEnrollment({ courseId, courseName });
-          setShowEnrollConfirm(true);
+          setShowRolSelection(true);
         }
         // Limpiar el estado
         window.history.replaceState({}, document.title);
@@ -201,8 +237,11 @@ export default function Cursos() {
 
   const handleFilterChange = (filterColumn, value) => {
     if (filterColumn === "categoria") {
-      const categoryValue = value === "Todos" ? null : value;
+      // Encontrar el ID de la categoría basado en el nombre
+      const category = categoryOptions.find((cat) => cat.name === value);
+      const categoryValue = category ? category.id : null;
       setCategorySelected(categoryValue);
+      setPage(1);
       // Resetear a página 1 cuando cambia la categoría
       loadCourses(categoryValue || "Todos", 1, pageSize, searchQuery);
     } else if (filterColumn === "estado") {
@@ -252,7 +291,19 @@ export default function Cursos() {
         />
       </div>
       {error && <div className="text-red-600 mt-2">{error}</div>}
+      <RoleSelectionModal
+        isOpen={showRolSelection}
+        onClose={() => {setShowRolSelection(false);setPendingEnrollment(null);}}
+        onSelectRole={handleRoleSelection}
+        courseName={pendingEnrollment?.courseName || ""}
+      />
 
+      <PdfUploadModal
+        isOpen={showPdfUpload}
+        onClose={() => {setShowPdfUpload(false);setIsExpositor(false);setPendingEnrollment(null);}}
+        onFileUpload={handleDocumentUpload}
+        courseName={pendingEnrollment?.courseName || ""}
+      />
       <EnrollmentModal
         isOpen={showEnrollmentModal}
         onClose={() => {
@@ -269,10 +320,12 @@ export default function Cursos() {
         onClose={() => {
           setShowEnrollConfirm(false);
           setPendingEnrollment(null);
+          setIsExpositor(false);
+          setDocumentFile(null);
         }}
         onConfirm={() => pendingEnrollment && handleEnroll(pendingEnrollment.courseId, pendingEnrollment.courseName)}
         title="¿Confirmar inscripción?"
-        message={`¿Estás seguro de que deseas inscribirte en el curso "${pendingEnrollment?.courseName}"?`}
+        message={`¿Estás seguro de que deseas inscribirte como ${isExpositor ? 'Expositor' : 'Participante'} en el curso "${pendingEnrollment?.courseName}"?${documentFile ? '\n\nArchivo adjunto: ' + documentFile.name : ''}`}
         confirmText="Inscribirme"
         cancelText="Cancelar"
         type="info"

@@ -1,7 +1,8 @@
 import api from './api';
 
-export const getCourses = async (page = 1, pageSize = 10, status = null, category = null, token = null) => {
+export const getCourses = async (page = 1, pageSize = 10, status = null, category_id = null, token = null) => {
     try {
+
         const params = {
             page,
             page_size: pageSize
@@ -13,8 +14,8 @@ export const getCourses = async (page = 1, pageSize = 10, status = null, categor
         }
         
         // Solo agregar category si se proporciona
-        if (category) {
-            params.category = category;
+        if (category_id) {
+            params.category_id = category_id;
         }
         let response;
         if (token) {

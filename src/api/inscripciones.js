@@ -1,3 +1,4 @@
+import api from "./api";
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const enrollInCourse = async (userId, courseId) => {
@@ -96,4 +97,30 @@ export const getUserEnrollments = async (userId, enrollmentStatus = null) => {
     }
     throw error;
   }
+};
+/**
+ * Sube una imagen (multipart/form-data) y retorna la URL
+ * @param {File} file
+ */
+
+export const uploadDocumentForEnrollment = async (file) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await api.post('/pdf/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log('Archivo subido exitosamente:', response.data);
+        return response.data;
+    } catch (error) {
+        if (error.code === 'ECONNABORTED') {
+            throw new Error('Tiempo de espera agotado. Verifica tu conexión a internet.');
+        }
+        if (error.response) {
+            throw new Error(`Error del servidor: ${error.response.status} - ${error.response.data?.message || 'Error desconocido'}`);
+        }
+        throw new Error(`Error de red: ${error.message}`);
+    }
 };
