@@ -24,7 +24,7 @@ export default function Login() {
               src="src/assets/logoCTT.webp"
               className="mx-auto h-30 w-auto"
             />
-            <h2 className="text-center text-2xl font-bold mt-1 tracking-tight text-[#6C1313]">
+            <h2 className="text-center text-2xl font-bold mt-1 tracking-tight text-primary">
               Iniciar Sesión
             </h2>
           </div>
@@ -42,7 +42,7 @@ export default function Login() {
             ) : (
               <a
                 type="button"
-                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-[#CB972D]`}
+                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-secondary`}
                 onClick={() => setLoginType('local')}
               >
                 Local
@@ -60,7 +60,7 @@ export default function Login() {
             ) : (
               <a
                 type="button"
-                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-[#CB972D]`}
+                className={`cursor-pointer flex w-full justify-center rounded-md py-2 px-4 text-sm font-semibold shadow-sm focus-visible:outline-offset-2 bg-secondary`}
                 onClick={() => setLoginType('365')}
               >
                 365

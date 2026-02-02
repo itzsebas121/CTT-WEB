@@ -39,7 +39,7 @@ export default function Banner ()
     }, []);
   return (
     <div className="bg-white mt-15" data-aos="fade-down">
-        <div className="relative isolate overflow-hidden bg-[#6C1313] px-6 lg:py-8 sm:py-32 shadow-2xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
+        <div className="relative isolate overflow-hidden bg-primary px-6 lg:py-8 sm:py-32 shadow-2xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
           <svg
             viewBox="0 0 1024 1024"
             aria-hidden="true"

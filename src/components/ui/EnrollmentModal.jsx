@@ -70,7 +70,7 @@ export default function EnrollmentModal({ isOpen, onClose, enrollmentData, cours
 
               <button
                 onClick={onClose}
-                className="w-full bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+                className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
               >
                 Entendido
               </button>
@@ -124,7 +124,7 @@ export default function EnrollmentModal({ isOpen, onClose, enrollmentData, cours
                   onClose();
                   navigate('/dashboard/cursos/inscrito');
                 }}
-                className="w-full bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+                className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
               >
                 Generar orden de pago
               </button>

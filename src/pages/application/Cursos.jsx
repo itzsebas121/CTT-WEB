@@ -158,7 +158,7 @@ export default function Cursos() {
             <button
               onClick={() => handleEnrollClick(course.id, course.title)}
               disabled={enrolling}
-              className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-3 py-1 rounded text-sm disabled:opacity-50"
+              className="bg-primary hover:bg-primary-hover text-white px-3 py-1 rounded text-sm disabled:opacity-50"
             >
               Inscribirse
             </button>

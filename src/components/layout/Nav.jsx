@@ -79,14 +79,14 @@ export default function Nav() {
 
   return (
     <>
-      <nav aria-label="Global" className="sticky h-[60px] top-0 shadow-lg  z-50 w-full flex items-center justify-between p-6 lg:px-8 bg-[#FFFFFF] md:bg-[#6C1313] lg:bg-[#6C1313]">
+      <nav aria-label="Global" className="sticky h-[60px] top-0 shadow-lg  z-50 w-full flex items-center justify-between p-6 lg:px-8 bg-white md:bg-primary lg:bg-primary">
         <div className="lg:flex md:flex hidden lg:gap-x-12 md:gap-x-12 gap-4 lg:pl-30 md:pl-20">
           {mainNavigation.map((item) => (
             <NavLink
               key={item.id}
               to={item.href}
               className={({ isActive }) =>
-                `font-semibold transition ${isActive ? "text-[#6C1313] md:text-white border-b-2 border-[#6C1313] md:border-white" : "text-gray-700 md:text-gray-200 hover:text-[#6C1313] md:hover:text-white"
+                `font-semibold transition ${isActive ? "text-primary md:text-white border-b-2 border-primary md:border-white" : "text-gray-700 md:text-gray-200 hover:text-primary md:hover:text-white"
                 }`
               }
             >
@@ -105,7 +105,7 @@ export default function Nav() {
               >
                 <div className="relative">
                   <UserCircleIcon className="size-5" />
-                  <span className="absolute -top-1 -right-1 size-2.5 bg-green-400 rounded-full border-2 border-[#6C1313]"></span>
+                  <span className="absolute -top-1 -right-1 size-2.5 bg-green-400 rounded-full border-2 border-primary"></span>
                 </div>
                 <span className="hidden lg:inline">{user.name || user.username}</span>
                 <span className="hidden lg:inline text-xs text-green-300">● En línea</span>
@@ -123,7 +123,7 @@ export default function Nav() {
                   <div className="p-2">
                     <Link
                       to="/dashboard/cursos/disponibles"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-[#6C1313]  rounded-md transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-primary hover:bg-primary-hover rounded-md transition-colors"
                       onClick={() => setShowUserMenu(false)}
                     >
                       <ArrowRightOnRectangleIcon className="size-5" />
@@ -203,8 +203,8 @@ export default function Nav() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={({ isActive }) =>
                       `block rounded-lg px-3 py-2 font-semibold  ${isActive
-                        ? "bg-[#6C1313]"
-                        : "text-[#6C1313] NavLink  hover:bg-[#6C1313] "
+                        ? "bg-primary"
+                        : "text-primary NavLink  hover:bg-primary "
                       }`
                     }
                   >
@@ -213,14 +213,13 @@ export default function Nav() {
                 ))}
               </div>
             </div>
-            <div className="border-t-1 border-[#6C1313] divide-y divide-gray-500/10" >
+            <div className="border-t-1 border-primary divide-y divide-gray-500/10" >
               <div className="space-y-2 py-6">
                 {itemsHeader.map((item) => (
                   <a
                     key={item.id}
                     href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold"
-                    style={{ color: '#6C1313' }}
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-primary"
                   >
                     {item.title}
                   </a>
@@ -234,7 +233,7 @@ export default function Nav() {
                 <div className="space-y-3">
                   <div className="px-3 py-2 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-3 mb-2">
-                      <UserCircleIcon className="size-10 text-[#6C1313]" />
+                      <UserCircleIcon className="size-10 text-primary" />
                       <div>
                         <p className="font-semibold text-gray-900">{user.first_name + " " + user.first_last_name}</p>
                         <p className="text-sm text-gray-500">{user.email}</p>
@@ -244,7 +243,7 @@ export default function Nav() {
                   <Link
                     to="/dashboard/cursos/disponibles"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block w-full px-4 py-3 text-center font-semibold text-white bg-[#6C1313] rounded-lg hover:bg-[#8B1818] transition-colors"
+                    className="block w-full px-4 py-3 text-center font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors"
                   >
                     Ir a la plataforma
                   </Link>
@@ -259,7 +258,7 @@ export default function Nav() {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full px-4 py-3 font-semibold text-white bg-[#6C1313] rounded-lg hover:bg-[#8B1818] transition-colors"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors"
                 >
                   <UserCircleIcon className="size-5" />
                   Iniciar Sesión

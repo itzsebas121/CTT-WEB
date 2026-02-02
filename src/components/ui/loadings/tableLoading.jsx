@@ -1,17 +1,21 @@
-export default function TableLoading() {
+import React from 'react';
+
+export default function TableLoading({ cols = 4, rows = 5 }) {
+  // Retornamos un fragmento para que pueda ser insertado directamente en <tbody>
   return (
-    <div className="flex flex-row gap-2 w-full">
-      <div className="flex flex-col gap-2 w-full">
-        <div className="flex gap-2 w-full">
-          <div className="animate-pulse w-full bg-[#6c13137b] h-10 rounded-full"></div>
-        </div>
-        <div className="flex gap-2 w-full">
-          <div className="animate-pulse w-full bg-gray-300 h-8 rounded-full"></div>
-        </div>
-        <div className="flex gap-2 w-full">
-          <div className="animate-pulse w-full bg-gray-300 h-8 rounded-full"></div>
-        </div>
-      </div>
-    </div>
+    <>
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <tr key={`loading-row-${rowIndex}`} className="animate-pulse border-b border-gray-100 last:border-0">
+          {Array.from({ length: cols }).map((_, colIndex) => (
+            <td key={`loading-cell-${rowIndex}-${colIndex}`} className="px-6 py-4 whitespace-nowrap">
+              <div
+                className="h-4 bg-gray-100 rounded shimmer-wrapper relative overflow-hidden"
+                style={{ width: `${Math.floor(Math.random() * (90 - 40 + 1)) + 40}%` }}
+              ></div>
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
   );
 }

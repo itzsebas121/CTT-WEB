@@ -109,7 +109,7 @@ export default function CourseSection() {
       data-aos="fade-down"
     >
       <div className="mx-auto max-w-7xl md:px-6 lg:px-8">
-        <h2 className="text-2xl font-semibold text-[#6C1313] ml-6">
+        <h2 className="text-2xl font-semibold text-primary ml-6">
           Cursos y Categorías
         </h2>
         <div className="flex justify-center relative">
@@ -122,8 +122,8 @@ export default function CourseSection() {
                 key={category.id}
                 style={{
                   backgroundColor:
-                    activeCategory === category.id ? "#6C1313" : "#F5F5F5",
-                  color: activeCategory === category.id ? "white" : "#6C1313",
+                    activeCategory === category.id ? "var(--primary)" : "#F5F5F5",
+                  color: activeCategory === category.id ? "white" : "var(--primary)",
                 }}
                 className="flex flex-col items-center justify-center text-center min-w-[150px] transition-all duration-200 hover:opacity-80"
                 onClick={() => handleCategoryChange(category.id)}
@@ -144,7 +144,7 @@ export default function CourseSection() {
                     className={`h-20 w-20 mb-1 ${
                       activeCategory === category.id
                       ? "text-white"
-                      : "text-[#6C1313]"
+                      : "text-primary"
                     }`}
                     strokeWidth={0.5}
                   />
@@ -165,7 +165,7 @@ export default function CourseSection() {
               className=" h-15 bg-gray-50/50 hover:bg-gray-50/75 transition-all rounded-full p-3 shadow-md "
             >
               <ChevronRightIcon
-                className="h-6 w-6 text-[#6C1313]"
+                className="h-6 w-6 text-primary"
                 strokeWidth={2}
               />
             </button>
@@ -173,8 +173,8 @@ export default function CourseSection() {
         </div>
         {loading && (
           <div className="flex justify-center items-center mt-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6C1313]"></div>
-            <span className="ml-3 text-[#6C1313]">Cargando cursos...</span>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <span className="ml-3 text-primary">Cargando cursos...</span>
           </div>
         )}
 
@@ -253,7 +253,7 @@ export default function CourseSection() {
           data-aos="fade-right"
         >
           <button
-            className="transition-all duration-200 hover:bg-[#5a0f0f] focus:outline-none focus:bg-[#5a0f0f] focus:ring-2 focus:ring-[#6C1313] focus:ring-opacity-50 active:bg-[#4a0c0c]"
+            className="transition-all duration-200 hover:bg-primary-hover focus:outline-none focus:bg-primary-hover focus:ring-2 focus:ring-primary focus:ring-opacity-50 active:bg-primary-dark"
             onClick={handleViewMoreCourses}
           >
             Ver más cursos...

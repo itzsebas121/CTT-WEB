@@ -11,7 +11,7 @@ export default function RoleSelectionModal({ isOpen, onClose, onSelectRole, cour
         <div className="flex flex-col gap-3">
           <button
             onClick={() => onSelectRole('expositor')}
-            className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-4 py-3 rounded"
+            className="bg-primary hover:bg-primary-hover text-white px-4 py-3 rounded"
           >
             Inscribirme como Expositor
           </button>

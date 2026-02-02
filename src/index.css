@@ -2,12 +2,56 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+@theme {
+  /* Colores personalizados para Tailwind */
+  --color-primary: #6C1313;
+  --color-primary-hover: #5a0f0f;
+  --color-primary-dark: #4a0c0c;
+  --color-secondary: #CB972D;
+  --color-secondary-hover: #916500;
+  --color-accent-red: #f00;
+}
+
 :root {
+  /* Paleta de Colores - Sistema de Variables CSS */
+  
+  /* Colores Principales (Conchevino) */
+  --color-primary: #6C1313;
+  --color-primary-hover: #5a0f0f;
+  --color-primary-dark: #4a0c0c;
+  --color-primary-light: rgba(108, 19, 19, 0.5);
+  --color-primary-bg: rgba(108, 19, 19, 0.05);
+  --color-primary-ring: rgba(108, 19, 19, 0.2);
+  
+  /* Colores Secundarios (Dorado) */
+  --color-secondary: #CB972D;
+  --color-secondary-hover: #916500;
+  
+  /* Colores de Acento */
+  --color-accent-red: #f00;
+  
+  /* Colores Neutros */
+  --color-dark: #242424;
+  --color-text-dark: #213547;
+  --color-text-muted: #919191;
+  --color-white: #ffffff;
+  
+  /* Grises (usados en componentes) */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+  
   font-family: sans-serif, "Roboto", system-ui, Avenir, Helvetica, Arial;
   line-height: 1.5;
   font-weight: 400;
 
-  background-color: #242424;
+  background-color: var(--color-dark);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,16 +61,15 @@
 
 a {
   font-weight: 500;
-  color: white;
   text-decoration: inherit;
 }
 
 a:hover {
-  color: white;
+  color: inherit;
 }
 
 .agray {
-  color: #919191
+  color: var(--color-text-muted);
 }
 
 h1 {
@@ -43,8 +86,8 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: 0.5s;
-  color: white;
-  background-color: #CB972D;
+  color: var(--color-white);
+  background-color: var(--color-secondary);
 }
 
 .button {
@@ -56,18 +99,17 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: 0.5s;
-  color: white;
-  background-color: #CB972D;
+  color: var(--color-white);
+  background-color: var(--color-secondary);
 }
 
 button:hover {
-
-  background-color: #916500;
+  background-color: var(--color-secondary-hover);
 }
 
 button:focus,
 button:focus-visible {
-  background-color: #916500;
+  background-color: var(--color-secondary-hover);
 }
 
 button.rojo {
@@ -79,23 +121,23 @@ button.rojo {
   font-family: inherit;
   cursor: pointer;
   transition: 0.5s;
-  color: white;
-  background: #6C1313;
+  color: var(--color-white);
+  background: var(--color-primary);
 }
 
 button.rojo:hover {
-  background-color: #5a0f0f;
+  background-color: var(--color-primary-hover);
 }
 
 button.rojo:focus,
 button.rojo:focus-visible {
-  background-color: #5a0f0f;
+  background-color: var(--color-primary-hover);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(108, 19, 19, 0.5);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 button.rojo:active {
-  background-color: #4a0c0c;
+  background-color: var(--color-primary-dark);
 }
 
 .scrollbar-hide {
@@ -111,7 +153,7 @@ button.rojo:active {
 }
 
 .NavLink {
-  color: #6C1313;
+  color: var(--color-primary);
 }
 
 /* Animación para el diálogo de confirmación */
@@ -133,20 +175,19 @@ button.rojo:active {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: var(--color-text-dark);
+    background-color: var(--color-white);
   }
 
   a:hover {
-    color: white;
+    color: var(--color-white);
   }
 
   button {
-
-    background-color: #CB972D;
+    background-color: var(--color-secondary);
   }
 
   button.rojo {
-    background-color: #6C1313;
+    background-color: var(--color-primary);
   }
 }

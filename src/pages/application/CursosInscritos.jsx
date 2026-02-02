@@ -68,13 +68,13 @@ export default function CursosInscritos() {
             <div className="flex gap-2">
               <button
                 onClick={() => navigate(`/dashboard/curso/${enrollment.id_course}`)}
-                className="text-[#6C1313] hover:text-[#5a0f0f]"
+                className="text-primary hover:text-primary-hover"
                 title="Ver detalles del curso"
               >
                 <EyeIcon className="h-5 w-5 inline-block" />
               </button>
               <label htmlFor="file_input"
-              className="w-full bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
               >Subir Comprobante</label>
               <input
               type="file"
@@ -171,7 +171,7 @@ export default function CursosInscritos() {
           <p className="text-lg mb-2">No tienes cursos inscritos</p>
           <button
             onClick={() => navigate('/dashboard/cursos/disponibles')}
-            className="mt-4 bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-4 py-2 rounded"
+            className="mt-4 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded"
           >
             Ver cursos disponibles
           </button>

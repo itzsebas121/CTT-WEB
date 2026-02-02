@@ -57,7 +57,7 @@ export default function LoginLocal() {
     return (
         <form onSubmit={handleSubmit} className="space-y-6 mt-5">
             <div>
-                <label htmlFor="email" className="block text-sm font-medium text-[#6C1313]">
+                <label htmlFor="email" className="block text-sm font-medium text-primary">
                     Correo electrónico
                 </label>
                 <div className="mt-2">
@@ -74,7 +74,7 @@ export default function LoginLocal() {
             </div>
 
             <div>
-                <label htmlFor="password" className="block text-sm font-medium text-[#6C1313]">
+                <label htmlFor="password" className="block text-sm font-medium text-primary">
                     Contraseña
                 </label>
                 <div className="mt-2">
@@ -91,7 +91,7 @@ export default function LoginLocal() {
             </div>
             {loading && (
                 <div className="flex justify-center items-center mt-10">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6C1313]"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
             )}
             {errorMessage && (

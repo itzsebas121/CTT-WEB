@@ -15,7 +15,7 @@ export default function Courses() {
   return (
     <>
     <div className="bg-white">
-    <Carousel slides={coursesHeroSlides} height="400px" background={'white'} colorText={'#6C1313'} />
+    <Carousel slides={coursesHeroSlides} height="400px" background={'white'} colorText={'var(--color-primary)'} />
         <div className="lg:flex container mx-auto p-5">
           <FilterSideBar filters={filters} setFilters={setFilters} />
           <div className="lg:flex-1">

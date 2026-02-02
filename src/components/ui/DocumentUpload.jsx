@@ -55,7 +55,7 @@ export default function PdfUploadModal({ isOpen, onClose, onFileUpload, courseNa
             accept=".pdf"
             onChange={handleFileChange}
             disabled={uploading}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#6C1313] file:text-white hover:file:bg-[#5a0f0f] disabled:opacity-50"
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-hover disabled:opacity-50"
           />
           {selectedFile && (
             <p className="mt-2 text-sm text-green-600">
@@ -71,7 +71,7 @@ export default function PdfUploadModal({ isOpen, onClose, onFileUpload, courseNa
           <button
             onClick={handleSubmit}
             disabled={!selectedFile || uploading}
-            className="flex-1 bg-[#6C1313] hover:bg-[#5a0f0f] text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {uploading ? 'Procesando...' : 'Continuar'}
           </button>

@@ -59,7 +59,7 @@ const slides = [
 export default function Nosotros() {
   return (
     <>
-        <Carousel slides={contentHero} height="400px" background={'white'} colorText={'#6C1313'} />
+        <Carousel slides={contentHero} height="400px" background={'white'} colorText={'var(--color-primary)'} />
         <Section item={item}/>
         <BannerImage slides={slides} />
     </>

@@ -57,7 +57,7 @@ export default function FilterSidebar({ filters, setFilters }) {
 
   const FiltersContent = (
     <div className="min-h-0"> {/* min-h-0 evita que el contenido estire contenedores padres */}
-      <h2 className="text-xl font-semibold text-[#6C1313] mb-6">Filtros</h2>
+      <h2 className="text-xl font-semibold text-primary mb-6">Filtros</h2>
 
       {/* Buscar */}
       <div className="mb-4">
@@ -69,7 +69,7 @@ export default function FilterSidebar({ filters, setFilters }) {
           value={filters.search}
           onChange={(e) => handleChange("search", e.target.value)}
           placeholder="Ej: Arduino"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C1313]"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
 
@@ -90,8 +90,8 @@ export default function FilterSidebar({ filters, setFilters }) {
                 <div className={`
                   w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
                   ${filters.category === ""
-                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
-                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-white border-gray-300 hover:border-primary hover:shadow-sm focus:outline-none focus:border-primary focus:shadow-md active:border-primary active:shadow-sm'
                   }
                 `}>
                 {filters.category === "" && (
@@ -102,14 +102,14 @@ export default function FilterSidebar({ filters, setFilters }) {
             <span className={`
               flex items-center gap-3 text-sm transition-all duration-200
               ${filters.category === ""
-                ? 'text-[#6C1313] font-medium'
+                ? 'text-primary font-medium'
                 : 'text-gray-700 group-hover:text-gray-900'
               }
             `}>
               <span className={`
                 w-6 h-6 flex items-center justify-center transition-all duration-200
                 ${filters.category === ""
-                  ? 'text-[#6C1313]'
+                  ? 'text-primary'
                   : 'text-gray-600 group-hover:text-gray-700'
                 }
               `}>
@@ -133,8 +133,8 @@ export default function FilterSidebar({ filters, setFilters }) {
                 <div className={`
                   w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
                   ${filters.category === cat.text
-                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
-                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-white border-gray-300 hover:border-primary hover:shadow-sm focus:outline-none focus:border-primary focus:shadow-md active:border-primary active:shadow-sm'
                   }
                 `}>
                   {filters.category === cat.text && (
@@ -145,14 +145,14 @@ export default function FilterSidebar({ filters, setFilters }) {
               <span className={`
                 flex items-center gap-3 text-sm transition-all duration-200
                 ${filters.category === cat.text
-                  ? 'text-[#6C1313] font-medium'
+                  ? 'text-primary font-medium'
                   : 'text-gray-700 group-hover:text-gray-900'
                 }
               `}>
                 <cat.icon className={`
                   h-6 w-6 transition-all duration-200
                   ${filters.category === cat.text
-                    ? 'text-[#6C1313]'
+                    ? 'text-primary'
                     : 'text-gray-600 group-hover:text-gray-700'
                   }
                 `} />
@@ -170,7 +170,7 @@ export default function FilterSidebar({ filters, setFilters }) {
         <select
           value={filters.modality}
           onChange={(e) => handleChange("modality", e.target.value)}
-          className="w-full text-black rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C1313]"
+          className="w-full text-black rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         >
           <option value="">Todos</option>
           <option value="presencial">Presencial</option>
@@ -198,8 +198,8 @@ export default function FilterSidebar({ filters, setFilters }) {
                 <div className={`
                   w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
                   ${filters.duration === ""
-                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
-                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-white border-gray-300 hover:border-primary hover:shadow-sm focus:outline-none focus:border-primary focus:shadow-md active:border-primary active:shadow-sm'
                   }
                 `}>
                 {filters.duration === "" && (
@@ -210,7 +210,7 @@ export default function FilterSidebar({ filters, setFilters }) {
             <span className={`
               flex items-center gap-3 text-sm transition-all duration-200
               ${filters.duration === ""
-                ? 'text-[#6C1313] font-medium'
+                ? 'text-primary font-medium'
                 : 'text-gray-700 group-hover:text-gray-900'
               }
             `}>
@@ -238,8 +238,8 @@ export default function FilterSidebar({ filters, setFilters }) {
                 <div className={`
                   w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
                   ${filters.duration === duration.id
-                    ? 'bg-[#6C1313] border-[#6C1313] text-white'
-                    : 'bg-white border-gray-300 hover:border-[#6C1313] hover:shadow-sm focus:outline-none focus:border-[#6C1313] focus:shadow-md active:border-[#6C1313] active:shadow-sm'
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-white border-gray-300 hover:border-primary hover:shadow-sm focus:outline-none focus:border-primary focus:shadow-md active:border-primary active:shadow-sm'
                   }
                 `}>
                   {filters.duration === duration.id && (
@@ -250,7 +250,7 @@ export default function FilterSidebar({ filters, setFilters }) {
               <span className={`
                 flex items-center gap-3 text-sm transition-all duration-200
                 ${filters.duration === duration.id
-                  ? 'text-[#6C1313] font-medium'
+                  ? 'text-primary font-medium'
                   : 'text-gray-700 group-hover:text-gray-900'
                 }
               `}>
@@ -264,7 +264,7 @@ export default function FilterSidebar({ filters, setFilters }) {
       <div className="mt-6 flex gap-2">
         <button
           onClick={resetFilters}
-          className="flex-1 bg-[#6C1313] text-white py-2 rounded-lg text-sm transition-all duration-200 hover:bg-[#5a0f0f] focus:outline-none focus:bg-[#5a0f0f] focus:ring-2 focus:ring-[#6C1313] focus:ring-opacity-50 active:bg-[#4a0c0c]"
+          className="flex-1 bg-primary text-white py-2 rounded-lg text-sm transition-all duration-200 hover:bg-primary-hover focus:outline-none focus:bg-primary-hover focus:ring-2 focus:ring-primary focus:ring-opacity-50 active:bg-primary-dark"
         >
           Limpiar
         </button>

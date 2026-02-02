@@ -10,7 +10,7 @@ export default function CourseHeader({ course, onEnroll, enrolling }) {
                     className="w-full h-64 sm:h-80 object-cover"
                 />
                 <div className="absolute top-4 left-4">
-                    <span className="bg-[#6C1313] text-white px-3 py-1 rounded-full text-xl font-medium">
+                    <span className="bg-primary text-white px-3 py-1 rounded-full text-xl font-medium">
                         {course.category_name}
                     </span>
                 </div>
@@ -37,31 +37,31 @@ export default function CourseHeader({ course, onEnroll, enrolling }) {
                 {/* Course Info Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                     <div className="bg-gray-50 rounded-xl p-4 text-center">
-                        <ClockIcon className="h-8 w-8 text-[#6C1313] mx-auto mb-2" />
+                        <ClockIcon className="h-8 w-8 text-primary mx-auto mb-2" />
                         <div className="text-sm font-medium text-gray-900">
                             Duración
                         </div>
-                        <div className="text-lg font-bold text-[#6C1313]">
+                        <div className="text-lg font-bold text-primary">
                             {course.requirements?.hours?.total || 0} horas
                         </div>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-4 text-center">
-                        <UserGroupIcon className="h-8 w-8 text-[#6C1313] mx-auto mb-2" />
+                        <UserGroupIcon className="h-8 w-8 text-primary mx-auto mb-2" />
                         <div className="text-sm font-medium text-gray-900">
                             Nivel
                         </div>
-                        <div className="text-lg font-bold text-[#6C1313]">
+                        <div className="text-lg font-bold text-primary">
                             Todos los niveles
                         </div>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-4 text-center">
-                        <MapPinIcon className="h-8 w-8 text-[#6C1313] mx-auto mb-2" />
+                        <MapPinIcon className="h-8 w-8 text-primary mx-auto mb-2" />
                         <div className="text-sm font-medium text-gray-900">
                             Modalidad
                         </div>
-                        <div className="text-lg font-bold text-[#6C1313]">
+                        <div className="text-lg font-bold text-primary">
                             {course.requirements?.modality || 'Presencial'}
                         </div>
                     </div>
@@ -74,7 +74,7 @@ export default function CourseHeader({ course, onEnroll, enrolling }) {
                         {course.requirements?.prices?.map((price, index) => (
                             <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-3 h-3 bg-[#6C1313] rounded-full"></div>
+                                    <div className="w-3 h-3 bg-primary rounded-full"></div>
                                     <div>
                                         <div className="font-medium text-gray-900">
                                             {price.category}
@@ -85,7 +85,7 @@ export default function CourseHeader({ course, onEnroll, enrolling }) {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-2xl font-bold text-[#6C1313]">
+                                    <div className="text-2xl font-bold text-primary">
                                         ${price.amount}
                                     </div>
                                     <div className="text-sm text-gray-500">
@@ -98,7 +98,7 @@ export default function CourseHeader({ course, onEnroll, enrolling }) {
 
                     {/* Highlighted Price for Enrollment */}
                     {course.requirements?.prices?.length > 0 && (
-                        <div className="mt-6 p-4 bg-gradient-to-r from-[#6C1313] to-[#5a0f0f] rounded-xl text-white">
+                        <div className="mt-6 p-4 bg-gradient-to-r from-primary to-primary-hover rounded-xl text-white">
                             <div className="text-center">
                                 <div className="text-sm opacity-90 mb-1">Precio desde</div>
                                 <div className="text-3xl font-bold">
@@ -117,7 +117,7 @@ export default function CourseHeader({ course, onEnroll, enrolling }) {
                     <button 
                         onClick={onEnroll}
                         disabled={enrolling}
-                        className="bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-primary hover:bg-primary-hover text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {enrolling ? 'Inscribiendo...' : 'Inscríbete Ahora'}
                     </button>

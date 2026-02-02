@@ -37,9 +37,9 @@ export default function CardCourse({
         <div className="flex items-center justify-between text-gray-600 text-sm">
           <div className="flex items-center gap-1">
             {isOpen ? (
-              <LockOpenIcon className="h-5 w-5 text-[#6C1313]" />
+              <LockOpenIcon className="h-5 w-5 text-primary" />
             ) : (
-              <LockClosedIcon className="h-5 w-5 text-[#6C1313]" />
+              <LockClosedIcon className="h-5 w-5 text-primary" />
             )}
             <span className="uppercase tracking-wide font-medium">
               {isOpen ? "ABIERTO" : "CERRADO"}
@@ -47,7 +47,7 @@ export default function CardCourse({
           </div>
 
           <div className="flex items-center gap-1">
-            <ClockIcon className="h-5 w-5 text-[#6C1313]" />
+            <ClockIcon className="h-5 w-5 text-primary" />
             <span>{hours} HORAS</span>
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function CardCourse({
         </div>
 
         <button
-          className="mt-4 bg-[#6C1313] text-white px-4 py-2 rounded-lg hover:bg-[#5a0f0f] transition-colors font-medium"
+          className="mt-4 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors font-medium"
           onClick={(e) => {
             e.stopPropagation(); // Evitar que se dispare el onClick del padre
             handleClick();

@@ -49,7 +49,7 @@ export default function CourseSidebar({ course, onEnroll, enrolling }) {
                 <div className="space-y-2">
                     {course.organizers?.map((organizer, index) => (
                         <div key={index} className="flex items-center space-x-3">
-                            <div className="w-2 h-2 bg-[#6C1313] rounded-full"></div>
+                            <div className="w-2 h-2 bg-primary rounded-full"></div>
                             <span className="text-sm text-gray-600">{organizer}</span>
                         </div>
                     ))}
@@ -65,7 +65,7 @@ export default function CourseSidebar({ course, onEnroll, enrolling }) {
                 <div className="space-y-2">
                     {course.target_audience?.map((audience, index) => (
                         <div key={index} className="flex items-center space-x-3">
-                            <UserGroupIcon className="h-4 w-4 text-[#6C1313]" />
+                            <UserGroupIcon className="h-4 w-4 text-primary" />
                             <span className="text-sm text-gray-600">{audience}</span>
                         </div>
                     ))}
@@ -76,7 +76,7 @@ export default function CourseSidebar({ course, onEnroll, enrolling }) {
             <button
                 onClick={onEnroll}
                 disabled={enrolling}
-                className="w-full bg-[#6C1313] hover:bg-[#5a0f0f] text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-4"
             >
                 {enrolling ? 'Inscribiendo...' : 'Inscribirse'}
             </button>

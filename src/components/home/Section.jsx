@@ -7,7 +7,7 @@ export default function Section({item}) {
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
           <div className="lg:pt-4 lg:pr-8">
             <div className="lg:max-w-lg">
-              <h2 className="text-2xl font-semibold text-[#6C1313]">{item.title}</h2>
+              <h2 className="text-2xl font-semibold text-primary">{item.title}</h2>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
                 {item.subtitle}
               </p>
@@ -22,7 +22,7 @@ export default function Section({item}) {
                       const  Icono = Icons[item.icon];
                         return (
                           <div key={index} className="relative pl-9">
-                            <dt className="inline font-semibol text-[#6C1313]">
+                            <dt className="inline font-semibol text-primary">
                               <Icono aria-hidden="true" className="absolute top-1 left-1 size-5" />
                               {item.title}
                             </dt>

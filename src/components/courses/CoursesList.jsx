@@ -145,14 +145,14 @@ export default function CoursesList({filters}) {
 
     return (
         <div className="overflow-hidden bg-white mx-auto max-w-7xl md:px-6 lg:px-8 pt-8" data-aos="fade-down">
-            <h2 className="text-2xl font-semibold text-[#6C1313] ml-6">
+            <h2 className="text-2xl font-semibold text-primary ml-6">
                 Cursos {totalCourses > 0 && `(${totalCourses})`}
             </h2>
 
             {loading && page === 1 && (
                 <div className="flex justify-center items-center mt-10">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6C1313]"></div>
-                    <span className="ml-3 text-[#6C1313]">Cargando cursos...</span>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <span className="ml-3 text-primary">Cargando cursos...</span>
                 </div>
             )}
 
@@ -223,8 +223,8 @@ export default function CoursesList({filters}) {
                         </div>
                         {loading && page > 1 && (
                             <div className="flex justify-center items-center mt-6 mb-6">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6C1313]"></div>
-                                <span className="ml-3 text-[#6C1313]">Cargando más cursos...</span>
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                <span className="ml-3 text-primary">Cargando más cursos...</span>
                             </div>
                         )}
                         {!hasMore && filteredCourses.length > 0 && (

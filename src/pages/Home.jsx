@@ -70,7 +70,7 @@ export default function Home() {
       <CourseSection/>
       <BannerImage slides={aboutData} />
       <Stats/>
-      <Carousel slides={projectsData} marginBottom={65} colorText={'#6C1313'} background={'white'}/>
+      <Carousel slides={projectsData} marginBottom={65} colorText={'var(--color-primary)'} background={'white'}/>
     </div>
   );
 }

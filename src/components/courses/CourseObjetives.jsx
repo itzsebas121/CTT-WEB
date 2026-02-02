@@ -5,7 +5,7 @@ export default function CourseObjectives({ course }) {
 
     return (
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-2xl font-bold text-[#6C1313] mb-4">
+            <h2 className="text-2xl font-bold text-primary mb-4">
                 Objetivos del Curso
             </h2>
             <ul className="space-y-3">

@@ -77,8 +77,8 @@ export default function Stats() {
             const [animatedValue, elementRef] = useAnimatedCounter(stat.value);
             return (
               <div key={stat.id} className="mx-auto flex max-w-xs flex-col gap-y-4" ref={elementRef}>
-                <dt className="text-base/7 text-[#6C1313]">{stat.name}</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-[#6C1313] sm:text-5xl">
+                <dt className="text-base/7 text-primary">{stat.name}</dt>
+                <dd className="order-first text-3xl font-semibold tracking-tight text-primary sm:text-5xl">
                   {animatedValue}
                 </dd>
               </div>
