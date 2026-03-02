@@ -4,31 +4,31 @@
 
 @theme {
   /* Colores personalizados para Tailwind */
-  --color-primary: #6C1313;
-  --color-primary-hover: #5a0f0f;
-  --color-primary-dark: #4a0c0c;
-  --color-secondary: #CB972D;
-  --color-secondary-hover: #916500;
-  --color-accent-red: #f00;
+  --color-primary: #3d5e94;
+  --color-primary-hover: #2b4268;
+  --color-primary-dark: #1f2f4a;
+  --color-secondary: #e67e22;
+  --color-secondary-hover: #d35400;
+  --color-accent-blue: #5b8dd8;
 }
 
 :root {
   /* Paleta de Colores - Sistema de Variables CSS */
   
-  /* Colores Principales (Conchevino) */
-  --color-primary: #6C1313;
-  --color-primary-hover: #5a0f0f;
-  --color-primary-dark: #4a0c0c;
-  --color-primary-light: rgba(108, 19, 19, 0.5);
-  --color-primary-bg: rgba(108, 19, 19, 0.05);
-  --color-primary-ring: rgba(108, 19, 19, 0.2);
+  /* Colores Principales (Azul) */
+  --color-primary: #3d5e94;
+  --color-primary-hover: #2b4268;
+  --color-primary-dark: #1f2f4a;
+  --color-primary-light: rgba(61, 94, 148, 0.5);
+  --color-primary-bg: rgba(61, 94, 148, 0.05);
+  --color-primary-ring: rgba(61, 94, 148, 0.2);
   
-  /* Colores Secundarios (Dorado) */
-  --color-secondary: #CB972D;
-  --color-secondary-hover: #916500;
+  /* Colores Secundarios (Naranja) */
+  --color-secondary: #C4962A;
+  --color-secondary-hover: #3d5e94;
   
   /* Colores de Acento */
-  --color-accent-red: #f00;
+  --color-accent-blue: #5b8dd8;
   
   /* Colores Neutros */
   --color-dark: #242424;

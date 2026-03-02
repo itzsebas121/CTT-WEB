@@ -11,15 +11,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { getCategoriesEnabled } from "../../api/categories";
 
-
-const categories = [
-  { id: 1, text: "TICS", icon: ComputerDesktopIcon },
-  { id: 2, text: "Educativo", icon: BuildingLibraryIcon },
-  { id: 3, text: "Software", icon: CommandLineIcon },
-  { id: 4, text: "Electrónica", icon: CpuChipIcon },
-  { id: 5, text: "Congresos", icon: UsersIcon },
-];
-
 const categoriesApi=await getCategoriesEnabled();
 const fetchEnabledCategories = categoriesApi.map((cat) => ({
   id: cat.id,
