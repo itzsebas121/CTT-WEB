@@ -2,23 +2,14 @@
 import { useEffect, useState } from "react";
 import {
   CpuChipIcon,
-  BuildingLibraryIcon,
-  CommandLineIcon,
-  ComputerDesktopIcon,
   FunnelIcon,
   XMarkIcon,
-  UsersIcon
 } from "@heroicons/react/24/outline";
 import { getCategoriesEnabled } from "../../api/categories";
 
-const categoriesApi=await getCategoriesEnabled();
-const fetchEnabledCategories = categoriesApi.map((cat) => ({
-  id: cat.id,
-  text: cat.name,
-  icon: CpuChipIcon, // Icono por defecto si no se encuentra
-}));
 export default function FilterSidebar({ filters, setFilters }) {
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   // Previene scroll de fondo cuando el drawer está abierto
   useEffect(() => {
@@ -26,6 +17,28 @@ export default function FilterSidebar({ filters, setFilters }) {
     else document.body.style.overflow = "";
     return () => (document.body.style.overflow = "");
   }, [open]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoriesApi = await getCategoriesEnabled();
+        const normalizedCategories = Array.isArray(categoriesApi)
+          ? categoriesApi.map((cat) => ({
+              id: cat.id,
+              text: cat.name,
+              icon: CpuChipIcon,
+            }))
+          : [];
+
+        setCategories(normalizedCategories);
+      } catch (error) {
+        console.error("Error al cargar categorías:", error);
+        setCategories([]);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const handleChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -110,7 +123,7 @@ export default function FilterSidebar({ filters, setFilters }) {
             </span>
           </label>
 
-          {fetchEnabledCategories.map((cat) => (
+          {categories.map((cat) => (
             <label key={cat.id} className="flex items-center gap-3 cursor-pointer group transition-all duration-200 hover:bg-gray-50 p-2 rounded-lg -m-2">
               <div className="relative">
                 <input

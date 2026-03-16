@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getUserEnrollments } from "../../api/inscripciones";
-import { EyeIcon, DocumentTextIcon } from "@heroicons/react/16/solid";
+import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import { Table } from "../../components/ui";
 import AOS from "aos";
@@ -8,9 +8,11 @@ import "aos/dist/aos.css";
 
 const headers = ["titulo", "categoria", "fecha_inscripcion", "estado", "detalles"];
 
+const API_ENROLLMENT_STATUSES = ["Interesado", "Generada la orden", "Pagado", "Facturado", "Anulado"];
+
 // Filtros disponibles basados en la API
 const filters = {
-  estado: ["Interesado", "Generada la orden", "Pagado", "Facturado", "Anulado"],
+  estado: API_ENROLLMENT_STATUSES,
 };
 
 export default function CursosInscritos() {
@@ -29,7 +31,7 @@ export default function CursosInscritos() {
     alert(`Generar orden de pago para: ${courseName}`);
   };*/
 
-  const loadEnrollments = async (enrollmentStatus = null) => {
+  const loadEnrollments = useCallback(async (enrollmentStatus = null) => {
     try {
       setLoading(true);
       setError(null);
@@ -56,11 +58,13 @@ export default function CursosInscritos() {
           day: 'numeric'
         });
 
+        const apiStatus = enrollment.status || "Interesado";
+
         return {
           titulo: enrollment.course_title || "Sin título",
           categoria: enrollment.course_category_name || "Sin categoría",
           fecha_inscripcion: formattedDate,
-          estado: enrollment.status == "Interesado" ? "Pendiente" : "Anulado" || "Pendiente",
+          estado: API_ENROLLMENT_STATUSES.includes(apiStatus) ? apiStatus : "Interesado",
           id: enrollment.id,
           courseId: enrollment.id_course,
           courseImage: enrollment.course_image,
@@ -103,13 +107,13 @@ export default function CursosInscritos() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: false, mirror: true });
     AOS.refresh();
     loadEnrollments(statusFilter);
-  }, []);
+  }, [loadEnrollments, statusFilter]);
 
   // Manejar cambio de filtro
   const handleFilterChange = (filterColumn, value) => {
@@ -117,7 +121,6 @@ export default function CursosInscritos() {
       const statusValue = value === "Todos" || !value ? null : value;
       setStatusFilter(statusValue);
       setPage(1); // Reset a primera página
-      loadEnrollments(statusValue);
     }
   };
 

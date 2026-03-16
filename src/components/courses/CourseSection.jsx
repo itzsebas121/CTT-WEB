@@ -122,8 +122,8 @@ export default function CourseSection() {
                 key={category.id}
                 style={{
                   backgroundColor:
-                    activeCategory === category.id ? "var(--primary)" : "#F5F5F5",
-                  color: activeCategory === category.id ? "white" : "var(--primary)",
+                    activeCategory === category.id ? "var(--color-primary)" : "#F5F5F5",
+                  color: activeCategory === category.id ? "white" : "var(--color-primary)",
                 }}
                 className="flex flex-col items-center justify-center text-center min-w-[150px] transition-all duration-200 hover:opacity-80"
                 onClick={() => handleCategoryChange(category.id)}
