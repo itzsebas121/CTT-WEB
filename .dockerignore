@@ -2,7 +2,6 @@
 # Dependencies and build output
 # =========================================
 node_modules/
-dist/
 out/
 .tmp/
 .cache/
@@ -25,6 +24,7 @@ reports/
 # Environment and config files (sensitive)
 # =========================================
 *.env*
+!.env
 !.env.production  # Allow production env file if needed
 *.log
  

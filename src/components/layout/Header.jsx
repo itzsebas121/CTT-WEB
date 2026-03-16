@@ -2,6 +2,9 @@ import { DocumentMagnifyingGlassIcon, ComputerDesktopIcon } from '@heroicons/rea
 import { useState, useEffect } from 'react'
 import ItemHeader from '../ui/ItemHeader'
 import { headerNavigation } from '../../constants/navigation'
+import logoUta from '../../assets/logoUTA.webp'
+import logoCtt from '../../assets/logoCTT.webp'
+import logoUtaPequeno from '../../assets/LogoUTAPequeño.png'
 
 export default function Header() {
   const [isVisible, setIsVisible] = useState(true)
@@ -42,7 +45,7 @@ export default function Header() {
                 <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5">
                 <img
                     alt=""
-                    src="src/assets/logoUTA.webp"
+                  src={logoUta}
                     className="h-22 w-auto"
                 />
                 </a>
@@ -58,7 +61,7 @@ export default function Header() {
                 <a href="https://uta.edu.ec/ctt-fisei/" className="-m-1.5 p-1.5">
                     <img
                         alt="CTT Logo"
-                        src="src/assets/logoCTT.webp"
+                    src={logoCtt}
                         className="h-22 w-auto"
                     />
                 </a>
@@ -67,7 +70,7 @@ export default function Header() {
                 <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5">
                 <img
                     alt="UTA Logo"
-                    src="src/assets/logoUTAPequeño.png"
+                  src={logoUtaPequeno}
                     className="h-15 w-auto min-w-30"
                 />
                 </a>

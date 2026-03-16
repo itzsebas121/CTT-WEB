@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, useCallback } from "react"
 import AOS from "aos"
 import 'aos/dist/aos.css'
 import { getCourses, getCoursesByCategory, searchCourses } from "../../api/courses"
+import { resolveImageUrl } from "../../utils/helpers"
 
 export default function CoursesList({filters}) {
     const [courses, setCourses] = useState([]);
@@ -41,7 +42,7 @@ export default function CoursesList({filters}) {
             // Transformar los datos
             const transformedCourses = data.courses.map(course => ({
                 title: course.title,
-                image: course.course_image_detail,
+                image: resolveImageUrl(course.course_image_detail),
                 isOpen: course.status === 'activo',
                 hours: course.requirements?.hours?.total?.toString() || '0',
                 description: course.description,

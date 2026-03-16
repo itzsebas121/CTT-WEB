@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { register } from "../../api/auth"
 import { useNavigate } from "react-router-dom"
+import fiseiImage from "../../assets/fisei.jpg"
+import logoCtt from "../../assets/logoCTT.webp"
 
 export default function Register () {
   const [currentStep, setCurrentStep] = useState(1)
@@ -137,7 +139,7 @@ export default function Register () {
       <div
         className="flex h-screen flex-col justify-center"
         style={{
-          backgroundImage: `url('src/assets/fisei.jpg')`,
+          backgroundImage: `url(${fiseiImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -147,7 +149,7 @@ export default function Register () {
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img
               alt="Your Company"
-              src="src/assets/logoCTT.webp"
+              src={logoCtt}
               className="mx-auto h-30 w-auto"
             />
             <h2 className="text-center text-2xl font-bold mt-1 tracking-tight text-primary">

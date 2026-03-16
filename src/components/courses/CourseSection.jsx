@@ -16,6 +16,7 @@ import "aos/dist/aos.css";
 import { getCourses, getCoursesByCategory } from "../../api/courses";
 import { getCategoriesEnabled } from "../../api/categories";
 import { IconsManifest } from "react-icons";
+import { resolveImageUrl } from "../../utils/helpers";
 
 export default function CourseSection() {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export default function CourseSection() {
       // Transformar los datos de la API
       const transformedCourses = data.courses.map((course) => ({
         title: course.title,
-        image: course.course_image_detail,
+        image: resolveImageUrl(course.course_image_detail),
         isOpen: course.status === "activo",
         hours: course.requirements?.hours?.total?.toString() || "0",
         description: course.description,

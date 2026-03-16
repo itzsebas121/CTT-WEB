@@ -5,6 +5,10 @@ ARG NODE_VERSION=24.14.0-alpine
 
 FROM node:${NODE_VERSION} AS dev
 
+# URL del backend disponible para Vite en modo desarrollo
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Set working directory inside the container
 WORKDIR /app
 

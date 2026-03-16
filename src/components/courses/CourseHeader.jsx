@@ -1,11 +1,14 @@
 import { ClockIcon, UserGroupIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import { resolveImageUrl } from "../../utils/helpers";
 
 export default function CourseHeader({ course, onEnroll, enrolling }) {
+    const courseImage = resolveImageUrl(course?.course_image);
+
     return (
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
             <div className="relative">
                 <img
-                    src={course.course_image}
+                    src={courseImage}
                     alt={course.title}
                     className="w-full h-64 sm:h-80 object-cover"
                 />

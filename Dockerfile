@@ -3,6 +3,10 @@
 # =========================================
 FROM node:18-alpine AS build
 
+# URL del backend inyectada en tiempo de build para Vite
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Crear directorio de trabajo
 WORKDIR /app
 

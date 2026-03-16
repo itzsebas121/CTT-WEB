@@ -52,3 +52,27 @@ export const capitalize = (str) => {
 export const formatNumber = (num) => {
   return new Intl.NumberFormat('es-ES').format(num);
 };
+
+/**
+ * Convierte rutas de imagen relativas de la API en URLs absolutas.
+ * Si la imagen ya es absoluta (http/https/data/blob), la retorna igual.
+ * @param {string} imageUrl - URL o ruta de imagen
+ * @returns {string} URL normalizada
+ */
+export const resolveImageUrl = (imageUrl) => {
+  if (!imageUrl || typeof imageUrl !== 'string') return '';
+
+  if (/^(https?:)?\/\//i.test(imageUrl) || imageUrl.startsWith('data:') || imageUrl.startsWith('blob:')) {
+    return imageUrl;
+  }
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  if (!apiUrl) return imageUrl;
+
+  try {
+    const apiOrigin = new URL(apiUrl).origin;
+    return `${apiOrigin}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+  } catch {
+    return imageUrl;
+  }
+};

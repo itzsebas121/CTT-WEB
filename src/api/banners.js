@@ -1,4 +1,5 @@
 import api from './api';
+import { resolveImageUrl } from '../utils/helpers';
 
 /**
  * Obtiene la configuración de todos los banners de la página principal
@@ -24,7 +25,7 @@ export const transformHeroSlides = (bannerData) => {
     
     return bannerData.imagenes.map((item, index) => ({
         id: index + 1,
-        image: item.imagen,
+        image: resolveImageUrl(item.imagen),
         title: bannerData.titulo,
         subtitle: bannerData.subtitulo,
         buttonText: bannerData.boton?.texto,
@@ -42,7 +43,7 @@ export const transformAboutSlides = (banner2Data) => {
     
     return banner2Data.imagenes.map((item, index) => ({
         id: index + 1,
-        image: item.imagen,
+        image: resolveImageUrl(item.imagen),
         title: item.titulo,
         subtitle: item.subtitulo,
         text: item.descripcion,
@@ -61,7 +62,7 @@ export const transformProjectsSlides = (banner3Data) => {
     
     return banner3Data.imagenes.map((item, index) => ({
         id: index + 1,
-        image: item.imagen,
+        image: resolveImageUrl(item.imagen),
         title: item.titulo,
         subtitle: item.subtitulo,
         buttonText: item.boton?.texto,
