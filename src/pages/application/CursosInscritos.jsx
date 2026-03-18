@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getUserEnrollments } from "../../api/inscripciones";
+import { getUserEnrollments, uploadPaymentReceiptTemp } from "../../api/inscripciones";
 import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import { Table } from "../../components/ui";
@@ -22,7 +22,35 @@ export default function CursosInscritos() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(7);
   const [statusFilter, setStatusFilter] = useState(null);
+  const [uploadSuccessMessage, setUploadSuccessMessage] = useState("");
   const navigate = useNavigate();
+
+  const handleUploadReceipt = useCallback(async (enrollmentId, courseTitle, event) => {
+    const file = event.target.files?.[0];
+    // Permite volver a seleccionar el mismo archivo si falla o se desea reintentar.
+    event.target.value = "";
+
+    if (!file) return;
+
+    try {
+      setError(null);
+      setUploadSuccessMessage("");
+
+      await uploadPaymentReceiptTemp(enrollmentId, file);
+
+      setUploadSuccessMessage(`Comprobante subido correctamente para "${courseTitle}".`);
+    } catch (err) {
+      if (err.message === "UNAUTHORIZED") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+      } else {
+        setError(err.message || "No se pudo subir el comprobante.");
+      }
+    } finally {
+      // No-op
+    }
+  }, [navigate]);
 
   /*const handleGeneratePaymentOrder = (enrollmentId, courseName) => {
     // Aquí puedes implementar la lógica para generar la orden de pago
@@ -77,17 +105,20 @@ export default function CursosInscritos() {
               >
                 <EyeIcon className="h-5 w-5 inline-block" />
               </button>
-              <label htmlFor="file_input"
-              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
-              >Subir Comprobante</label>
+              <label
+                htmlFor={`file_input_${enrollment.id}`}
+                className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors cursor-pointer"
+              >
+                Subir Comprobante
+              </label>
               <input
-              type="file"
-              className="hidden"
+                type="file"
+                className="hidden"
+                accept="application/pdf"
                 title="Subir comprobante de pago"
                 name="file_input"
-                id="file_input"
-                //TODO: Implementar función subir comprobante
-                //onClick={}
+                id={`file_input_${enrollment.id}`}
+                onChange={(e) => handleUploadReceipt(enrollment.id, enrollment.course_title || "curso", e)}
               />
             </div>
           ),
@@ -107,7 +138,7 @@ export default function CursosInscritos() {
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, handleUploadReceipt]);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: false, mirror: true });
@@ -147,6 +178,12 @@ export default function CursosInscritos() {
       </div>
 
       <div className="mb-4">
+        {uploadSuccessMessage && (
+          <div className="mb-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="status">
+            <span className="block sm:inline">{uploadSuccessMessage}</span>
+          </div>
+        )}
+
         {error ? (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
             <strong className="font-bold">Error: </strong>

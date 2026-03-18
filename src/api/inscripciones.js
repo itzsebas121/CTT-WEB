@@ -124,3 +124,84 @@ export const uploadDocumentForEnrollment = async (file) => {
         throw new Error(`Error de red: ${error.message}`);
     }
 };
+
+// Endpoint temporal para pruebas de carga de comprobantes.
+const TEMP_RECEIPT_UPLOAD_URL =
+  import.meta.env.VITE_TEMP_RECEIPT_UPLOAD_URL || "https://httpbin.org/post";
+
+/**
+ * Sube comprobante de pago a un endpoint temporal.
+ * @param {number|string} enrollmentId
+ * @param {File} file
+ */
+export const uploadPaymentReceiptTemp = async (enrollmentId, file) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("No se encontró token de autenticación");
+  }
+
+  if (!file) {
+    throw new Error("Debes seleccionar un archivo");
+  }
+
+  if (file.type !== "application/pdf") {
+    throw new Error("Solo se permiten archivos PDF");
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("El comprobante no debe superar los 5MB");
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append("receipt", file);
+    formData.append("enrollment_id", String(enrollmentId));
+
+    const response = await fetch(TEMP_RECEIPT_UPLOAD_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      throw new Error("UNAUTHORIZED");
+    }
+
+    if (!response.ok) {
+      throw new Error("No se pudo subir el comprobante");
+    }
+
+    const data = await response.json();
+
+    // URL simulada para mantener un flujo consistente en front mientras el endpoint real se integra.
+    const receiptUrl =
+      data?.receipt_url ||
+      data?.url ||
+      `temp://receipts/${enrollmentId}/${encodeURIComponent(file.name)}`;
+
+    return {
+      success: true,
+      receiptUrl,
+      raw: data,
+    };
+  } catch (error) {
+    if (error.message === "UNAUTHORIZED") {
+      throw error;
+    }
+    if (
+      error instanceof TypeError ||
+      error.message.includes("Failed to fetch") ||
+      error.message.includes("NetworkError")
+    ) {
+      throw new Error(
+        "No hay conexión a internet. Verifica tu conexión e intenta nuevamente."
+      );
+    }
+    throw error;
+  }
+};

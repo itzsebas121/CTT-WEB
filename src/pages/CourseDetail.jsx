@@ -12,7 +12,8 @@ import {
   CourseObjetives,
   CourseMaterials,
 } from "../components/courses";
-import { EnrollmentModal, ConfirmDialog } from "../components/ui";
+import { EnrollmentModal, ConfirmDialog, RoleSelectionModal, PdfUploadModal } from "../components/ui";
+import { uploadDocumentForEnrollment } from "../api/inscripciones";
 
 export default function CourseDetail() {
   const { id } = useParams();
@@ -27,6 +28,11 @@ export default function CourseDetail() {
   const [shouldAutoEnroll, setShouldAutoEnroll] = useState(false);
   const [enrollmentError, setEnrollmentError] = useState(null);
   const [showEnrollConfirm, setShowEnrollConfirm] = useState(false);
+  const [showRoleSelection, setShowRoleSelection] = useState(false);
+  const [showPdfUpload, setShowPdfUpload] = useState(false);
+  const [isExpositor, setIsExpositor] = useState(false);
+  const [documentFile, setDocumentFile] = useState(null);
+  const [pendingEnrollment, setPendingEnrollment] = useState(null);
 
   const handleEnrollClick = () => {
     const token = localStorage.getItem("token");
@@ -49,7 +55,24 @@ export default function CourseDetail() {
       return;
     }
 
-    // Mostrar diálogo de confirmación
+    // Guardar datos y mostrar selección de rol
+    setPendingEnrollment({ courseId: id, courseName: course?.title || "Curso" });
+    setShowRoleSelection(true);
+  };
+
+  const handleRoleSelection = (role) => {
+    setShowRoleSelection(false);
+    setIsExpositor(role === 'expositor');
+    if (role === 'expositor') {
+      setShowPdfUpload(true);
+    } else {
+      setShowEnrollConfirm(true);
+    }
+  };
+
+  const handleDocumentUpload = (file) => {
+    setDocumentFile(file);
+    setShowPdfUpload(false);
     setShowEnrollConfirm(true);
   };
 
@@ -62,6 +85,9 @@ export default function CourseDetail() {
       setEnrolling(true);
       setEnrollmentError(null);
       const userData = JSON.parse(user);
+      if (isExpositor && documentFile) {
+        await uploadDocumentForEnrollment(documentFile);
+      }
       const response = await enrollInCourse(userData.id, parseInt(id));
       setEnrollmentData(response);
       setShowEnrollmentModal(true);
@@ -76,8 +102,11 @@ export default function CourseDetail() {
       }
     } finally {
       setEnrolling(false);
+      setPendingEnrollment(null);
+      setIsExpositor(false);
+      setDocumentFile(null);
     }
-  }, [id, navigate]);
+  }, [id, navigate, isExpositor, documentFile]);
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -112,14 +141,15 @@ export default function CourseDetail() {
     }
   }, [id, location.state]);
 
-  // Efecto separado para mostrar confirmación cuando el curso esté cargado
+  // Efecto separado para mostrar selección de rol cuando el curso esté cargado
   useEffect(() => {
     if (shouldAutoEnroll && course && !loading && !enrolling) {
       setShouldAutoEnroll(false);
-      // Mostrar diálogo de confirmación en lugar de inscribir automáticamente
-      setShowEnrollConfirm(true);
+      // Mostrar modal de selección de rol en lugar de inscribir automáticamente
+      setPendingEnrollment({ courseId: id, courseName: course?.title || "Curso" });
+      setShowRoleSelection(true);
     }
-  }, [shouldAutoEnroll, course, loading, enrolling]);
+  }, [shouldAutoEnroll, course, loading, enrolling, id]);
 
   const handleGoBack = () => {
     // Determinar de dónde vino el usuario
@@ -233,12 +263,38 @@ export default function CourseDetail() {
         error={enrollmentError}
       />
 
+      <RoleSelectionModal
+        isOpen={showRoleSelection}
+        onClose={() => {
+          setShowRoleSelection(false);
+          setPendingEnrollment(null);
+        }}
+        onSelectRole={handleRoleSelection}
+        courseName={pendingEnrollment?.courseName || ""}
+      />
+
+      <PdfUploadModal
+        isOpen={showPdfUpload}
+        onClose={() => {
+          setShowPdfUpload(false);
+          setIsExpositor(false);
+          setPendingEnrollment(null);
+        }}
+        onFileUpload={handleDocumentUpload}
+        courseName={pendingEnrollment?.courseName || ""}
+      />
+
       <ConfirmDialog
         isOpen={showEnrollConfirm}
-        onClose={() => setShowEnrollConfirm(false)}
+        onClose={() => {
+          setShowEnrollConfirm(false);
+          setPendingEnrollment(null);
+          setIsExpositor(false);
+          setDocumentFile(null);
+        }}
         onConfirm={handleEnroll}
         title="¿Confirmar inscripción?"
-        message={`¿Estás seguro de que deseas inscribirte en el curso "${course?.title}"?`}
+        message={`¿Estás seguro de que deseas inscribirte como ${isExpositor ? 'Expositor' : 'Participante'} en el curso "${course?.title}"?${documentFile ? '\n\nArchivo adjunto: ' + documentFile.name : ''}`}
         confirmText="Inscribirme"
         cancelText="Cancelar"
         type="info"

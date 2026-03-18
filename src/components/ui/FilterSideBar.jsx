@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   CpuChipIcon,
   FunnelIcon,
+  Squares2X2Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { getCategoriesEnabled } from "../../api/categories";
@@ -43,6 +44,9 @@ export default function FilterSidebar({ filters, setFilters }) {
   const handleChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
+
+  const isCategorySelected = (categoryId) =>
+    String(filters.category) === String(categoryId);
 
   const resetFilters = () => {
     setFilters({
@@ -110,15 +114,8 @@ export default function FilterSidebar({ filters, setFilters }) {
                 : 'text-gray-700 group-hover:text-gray-900'
               }
             `}>
-              <span className={`
-                w-6 h-6 flex items-center justify-center transition-all duration-200
-                ${filters.category === ""
-                  ? 'text-primary'
-                  : 'text-gray-600 group-hover:text-gray-700'
-                }
-              `}>
-                ⊙
-              </span>
+
+              <Squares2X2Icon className="w-6 h-6 flex items-center justify-center transition-all duration-200"/>
               Todas las categorías
             </span>
           </label>
@@ -129,33 +126,33 @@ export default function FilterSidebar({ filters, setFilters }) {
                 <input
                   type="radio"
                   name="category"
-                  value={cat.id}
-                  checked={filters.category === cat.id}
+                  value={String(cat.id)}
+                  checked={isCategorySelected(cat.id)}
                   onChange={(e) => handleChange("category", e.target.value)}
                   className="sr-only"
                 />
                 <div className={`
                   w-5 h-5 border-2 rounded-full transition-all duration-200 flex items-center justify-center
-                  ${filters.category === cat.text
+                  ${isCategorySelected(cat.id)
                     ? 'bg-primary border-primary text-white'
                     : 'bg-white border-gray-300 hover:border-primary hover:shadow-sm focus:outline-none focus:border-primary focus:shadow-md active:border-primary active:shadow-sm'
                   }
                 `}>
-                  {filters.category === cat.text && (
+                  {isCategorySelected(cat.id) && (
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                   )}
                 </div>
               </div>
               <span className={`
                 flex items-center gap-3 text-sm transition-all duration-200
-                ${filters.category === cat.text
+                ${isCategorySelected(cat.id)
                   ? 'text-primary font-medium'
                   : 'text-gray-700 group-hover:text-gray-900'
                 }
               `}>
                 <cat.icon className={`
                   h-6 w-6 transition-all duration-200
-                  ${filters.category === cat.text
+                  ${isCategorySelected(cat.id)
                     ? 'text-primary'
                     : 'text-gray-600 group-hover:text-gray-700'
                   }

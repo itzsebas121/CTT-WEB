@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Header, Nav, Footer } from './components/layout'
 import Home from './pages/Home'
 import Courses from './pages/Courses'
+import Events from './pages/Events'
 import CourseDetail from './pages/CourseDetail'
 import Nosotros from './pages/Nosotros'
 import Contact from './pages/Contact'
@@ -36,6 +37,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/events" element={<Events />} />
           <Route path="/course/:id" element={<CourseDetail />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contact" element={<Contact />} />

@@ -1,4 +1,5 @@
 import { DocumentMagnifyingGlassIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
+import { href } from 'react-router-dom';
 
 // Navegación principal del header
 export const headerNavigation = [
@@ -10,8 +11,9 @@ export const headerNavigation = [
 export const mainNavigation = [
   { id: 0, title: 'Home', href: '/' },
   { id: 1, title: 'Cursos', href: 'courses' },
-  { id: 2, title: 'Nosotros', href: 'nosotros' },
-  { id: 3, title: 'Contáctanos', href: 'contact' },
+  { id: 2, title: 'Eventos', href: 'events' },
+  { id: 3, title: 'Nosotros', href: 'nosotros' },
+  { id: 4, title: 'Contáctanos', href: 'contact' },
 ];
 
 // Items del header móvil
