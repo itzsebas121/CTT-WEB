@@ -1,41 +1,37 @@
-# =========================================
-# Stage 1: Build React (Vite)
-# =========================================
-FROM node:18-alpine AS build
+FROM node:20 AS build
 
-# URL del backend inyectada en tiempo de build para Vite
-ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL}
-
-# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar dependencias primero (mejor cache de Docker)
 COPY package*.json ./
 
-# Instalar dependencias
-RUN npm install
+RUN npm ci --production=false
 
-# Copiar el resto del proyecto
 COPY . .
 
-# Construir la aplicación React (genera /dist)
+RUN echo "VITE_API_URL=http://172.21.123.81:8000/api/v1" > .env
+
 RUN npm run build
 
+FROM nginx:alpine
 
-# =========================================
-# Stage 2: Production - Nginx
-# =========================================
-FROM nginx:stable-alpine
-
-# Eliminar configuración por defecto de nginx
-RUN rm -rf /usr/share/nginx/html/*
-
-# Copiar build de React desde el stage anterior
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Exponer puerto 80
-EXPOSE 80
+EXPOSE 3001
 
-# Iniciar nginx
+CMD ["nginx", "-g", "daemon off;"]FROM node:20 AS build
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --include=dev
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 3001
+
 CMD ["nginx", "-g", "daemon off;"]
