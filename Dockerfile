@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm ci --include=dev
 
 # Inyección de variable de entorno para el bundle de producción de Vite
-ARG VITE_API_URL=http://localhost:6002/api/v1
+ARG VITE_API_URL=http://localhost:3002/api/v1
 ENV VITE_API_URL=$VITE_API_URL
 
 COPY . .

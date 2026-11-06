@@ -5,7 +5,7 @@ ARG NODE_VERSION=20-alpine
 
 FROM node:${NODE_VERSION} AS dev
 
-ARG VITE_API_URL=http://localhost:6002/api/v1
+ARG VITE_API_URL=http://localhost:3002/api/v1
 ENV VITE_API_URL=${VITE_API_URL}
 
 WORKDIR /app
