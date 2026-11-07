@@ -1,27 +1,70 @@
-@import "tailwindcss";
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import "tailwindcss";
 
 @theme {
   /* Colores personalizados para Tailwind */
-  --color-primary: #3d5e94;
-  --color-primary-hover: #2b4268;
-  --color-primary-dark: #1f2f4a;
+  --color-primary: #00345e;
+  --color-primary-hover: #002747;
+  --color-primary-dark: #001f38;
   --color-secondary: #e67e22;
   --color-secondary-hover: #d35400;
   --color-accent-blue: #5b8dd8;
+
+  /* Notion Design Tokens from DESIGN.md */
+  --color-notion-blue: #00345e;
+  --color-notion-blue-hover: #002747;
+  --color-paper-warmth: #f6f5f4;
+  --color-pure-white: #ffffff;
+  --color-ink-black: #000000;
+  --color-graphite: #615d59;
+  --color-stone: #757575;
+  --color-sky-tint: #e6f3fe;
+  --color-marigold: #ffb110;
+  --color-coral: #f64932;
 }
 
 :root {
-  /* Paleta de Colores - Sistema de Variables CSS */
+  /* Paleta de Colores - Notion Design Tokens from DESIGN.md */
+  --color-notion-blue: #00345e;
+  --color-notion-blue-hover: #002747;
+  --color-paper-warmth: #f6f5f4;
+  --color-pure-white: #ffffff;
+  --color-ink-black: #000000;
+  --color-charcoal: #111111;
+  --color-stone: #757575;
+  --color-graphite: #615d59;
+  --color-slate: #696969;
+  --color-sky-tint: #e6f3fe;
+  --color-marigold: #ffb110;
+  --color-coral: #f64932;
+  --color-saffron: #e89d01;
+  --color-signal-blue: #097fe8;
+  --color-sky-wash: #62aef0;
+  --color-midnight-ink: #02093a;
+
+  /* Apple Design System Tokens */
+  --apple-glass-bg: rgba(255, 255, 255, 0.84);
+  --apple-glass-border: rgba(255, 255, 255, 0.65);
+  --apple-glass-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  --apple-dim-overlay: rgba(15, 23, 42, 0.45);
+  --apple-segmented-bg: rgba(0, 0, 0, 0.06);
+  --apple-segmented-active: #ffffff;
+  --apple-segmented-text: #111827;
+  --apple-segmented-text-muted: #64748b;
+  --apple-input-bg: rgba(255, 255, 255, 0.75);
+  --apple-input-border: rgba(0, 0, 0, 0.1);
+  --apple-input-focus-border: #3d5e94;
+  --apple-input-focus-ring: rgba(61, 94, 148, 0.2);
+  --apple-radius-card: 24px;
+  --apple-radius-control: 12px;
   
-  /* Colores Principales (Azul) */
-  --color-primary: #3d5e94;
-  --color-primary-hover: #2b4268;
-  --color-primary-dark: #1f2f4a;
-  --color-primary-light: rgba(61, 94, 148, 0.5);
-  --color-primary-bg: rgba(61, 94, 148, 0.05);
-  --color-primary-ring: rgba(61, 94, 148, 0.2);
+  /* Colores Principales (Azul Institucional UTA / FISEI) */
+  --color-primary: #00345e;
+  --color-primary-hover: #002747;
+  --color-primary-dark: #001f38;
+  --color-primary-light: rgba(0, 52, 94, 0.5);
+  --color-primary-bg: rgba(0, 52, 94, 0.08);
+  --color-primary-ring: rgba(0, 52, 94, 0.25);
   
   /* Colores Secundarios (Naranja) */
   --color-secondary: #C4962A;
@@ -77,17 +120,28 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: 0.5s;
-  color: var(--color-white);
-  background-color: var(--color-secondary);
+@layer base {
+  button:not([class]) {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.3s;
+    color: var(--color-white);
+    background-color: var(--color-secondary);
+  }
+
+  button:not([class]):hover {
+    background-color: var(--color-secondary-hover);
+  }
+
+  button:not([class]):focus,
+  button:not([class]):focus-visible {
+    background-color: var(--color-secondary-hover);
+  }
 }
 
 .button {
@@ -101,15 +155,6 @@ button {
   transition: 0.5s;
   color: var(--color-white);
   background-color: var(--color-secondary);
-}
-
-button:hover {
-  background-color: var(--color-secondary-hover);
-}
-
-button:focus,
-button:focus-visible {
-  background-color: var(--color-secondary-hover);
 }
 
 button.rojo {

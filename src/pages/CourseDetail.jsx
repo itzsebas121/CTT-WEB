@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { getCourseById } from "../api/courses";
-import { enrollInCourse } from "../api/inscripciones";
+import { enrollInCourse, uploadDocumentForEnrollment } from "../api/inscripciones";
 import {
   CourseHeader,
   CourseContent,
@@ -13,12 +13,14 @@ import {
   CourseMaterials,
 } from "../components/courses";
 import { EnrollmentModal, ConfirmDialog, RoleSelectionModal, PdfUploadModal } from "../components/ui";
-import { uploadDocumentForEnrollment } from "../api/inscripciones";
+import { useDashboardTheme } from "../context/DashboardThemeContext";
 
 export default function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isDark } = useDashboardTheme();
+
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,15 +36,14 @@ export default function CourseDetail() {
   const [documentFile, setDocumentFile] = useState(null);
   const [pendingEnrollment, setPendingEnrollment] = useState(null);
 
+  const isDashboard = location.pathname.startsWith("/dashboard");
+
   const handleEnrollClick = () => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
 
     if (!token || !user) {
-      // Determinar la ruta actual para guardarla correctamente
       const currentPath = location.pathname;
-
-      // Guardar la intención de inscripción antes de redirigir
       localStorage.setItem(
         "pendingEnrollment",
         JSON.stringify({
@@ -55,7 +56,6 @@ export default function CourseDetail() {
       return;
     }
 
-    // Guardar datos y mostrar selección de rol
     setPendingEnrollment({ courseId: id, courseName: course?.title || "Curso" });
     setShowRoleSelection(true);
   };
@@ -78,7 +78,6 @@ export default function CourseDetail() {
 
   const handleEnroll = useCallback(async () => {
     setShowEnrollConfirm(false);
-    //const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
 
     try {
@@ -115,18 +114,15 @@ export default function CourseDetail() {
         const courseData = await getCourseById(id);
         setCourse(courseData);
 
-        // Verificar si hay una inscripción pendiente después de login
         if (
           location.state?.enrollCourseId &&
           location.state.enrollCourseId === parseInt(id)
         ) {
-          const pendingEnrollmentData =
-            localStorage.getItem("pendingEnrollment");
+          const pendingEnrollmentData = localStorage.getItem("pendingEnrollment");
           if (pendingEnrollmentData) {
             localStorage.removeItem("pendingEnrollment");
             setShouldAutoEnroll(true);
           }
-          // Limpiar el estado
           window.history.replaceState({}, document.title);
         }
       } catch (err) {
@@ -141,69 +137,105 @@ export default function CourseDetail() {
     }
   }, [id, location.state]);
 
-  // Efecto separado para mostrar selección de rol cuando el curso esté cargado
   useEffect(() => {
     if (shouldAutoEnroll && course && !loading && !enrolling) {
       setShouldAutoEnroll(false);
-      // Mostrar modal de selección de rol en lugar de inscribir automáticamente
       setPendingEnrollment({ courseId: id, courseName: course?.title || "Curso" });
       setShowRoleSelection(true);
     }
   }, [shouldAutoEnroll, course, loading, enrolling, id]);
 
   const handleGoBack = () => {
-    // Determinar de dónde vino el usuario
-    const isDashboard = location.pathname.startsWith("/dashboard");
-
-    if (isDashboard) {
+    if (location.key !== "default") {
+      navigate(-1);
+    } else if (isDashboard) {
       navigate("/dashboard/cursos/disponibles");
     } else {
       navigate("/courses");
     }
   };
 
+  // Estado de Carga con Skeleton Elegante Dokploy
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-primary text-lg">Cargando curso...</p>
+      <div className="w-full max-w-7xl mx-auto space-y-6 animate-pulse">
+        {/* Barra superior skeleton */}
+        <div className="flex justify-between items-center pb-3 border-b border-black/[0.06] dark:border-white/[0.06]">
+          <div className={`h-9 w-36 rounded-xl ${isDark ? 'bg-white/[0.06]' : 'bg-black/[0.06]'}`} />
+          <div className={`h-6 w-20 rounded-lg ${isDark ? 'bg-white/[0.06]' : 'bg-black/[0.06]'}`} />
         </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg">
-            <h2 className="text-lg font-semibold mb-2">
-              Error al cargar el curso
-            </h2>
-            <p className="mb-4">{error}</p>
-            <button
-              onClick={() => navigate(-1)}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors"
-            >
-              Volver a Cursos
-            </button>
+        {/* Layout en 2 columnas skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <div className={`h-80 rounded-2xl ${isDark ? 'bg-[#16161a]' : 'bg-zinc-100'}`} />
+            <div className={`h-48 rounded-2xl ${isDark ? 'bg-[#16161a]' : 'bg-zinc-100'}`} />
+            <div className={`h-64 rounded-2xl ${isDark ? 'bg-[#16161a]' : 'bg-zinc-100'}`} />
+          </div>
+          <div className="lg:col-span-1 space-y-5">
+            <div className={`h-60 rounded-2xl ${isDark ? 'bg-[#16161a]' : 'bg-zinc-100'}`} />
+            <div className={`h-48 rounded-2xl ${isDark ? 'bg-[#16161a]' : 'bg-zinc-100'}`} />
           </div>
         </div>
       </div>
     );
   }
 
+  // Estado de Error
+  if (error) {
+    return (
+      <div className="w-full max-w-xl mx-auto py-16 px-4 text-center">
+        <div
+          className={`rounded-2xl p-8 border transition-colors ${
+            isDark ? 'bg-[#16161a] border-white/[0.08] shadow-xl' : 'bg-white border-black/[0.08] shadow-md'
+          }`}
+        >
+          <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
+            <ExclamationTriangleIcon className="w-6 h-6" />
+          </div>
+          <h2 className={`text-xl font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+            Error al Cargar la Información
+          </h2>
+          <p className={`text-xs sm:text-sm mb-6 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+            {error}
+          </p>
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
+              isDark
+                ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-white/10'
+                : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border border-zinc-200'
+            }`}
+          >
+            ← Volver a Cursos
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Estado no encontrado
   if (!course) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 text-lg">Curso no encontrado</p>
+      <div className="w-full max-w-xl mx-auto py-16 px-4 text-center">
+        <div
+          className={`rounded-2xl p-8 border transition-colors ${
+            isDark ? 'bg-[#16161a] border-white/[0.08] shadow-xl' : 'bg-white border-black/[0.08] shadow-md'
+          }`}
+        >
+          <h2 className={`text-xl font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+            Curso No Encontrado
+          </h2>
+          <p className={`text-xs sm:text-sm mb-6 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+            El programa académico solicitado no está disponible o ha sido retirado del catálogo.
+          </p>
           <button
-            onClick={() => navigate(-1)}
-            className="mt-4 bg-primary hover:bg-primary-hover text-white font-bold py-2 px-6 rounded transition-colors"
+            type="button"
+            onClick={handleGoBack}
+            className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-[#00345e] hover:bg-[#002747] text-white cursor-pointer transition-colors"
           >
-            Volver a Cursos
+            ← Volver al Catálogo
           </button>
         </div>
       </div>
@@ -211,47 +243,57 @@ export default function CourseDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="sticky top-[-35px] z-50">
-        <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-end">
-          <button
-            onClick={handleGoBack}
-            className="flex items-center text-primary hover:text-primary-hover transition-colors font-medium"
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-2" />
-            Volver a Cursos
-          </button>
+    <div className="w-full max-w-7xl mx-auto space-y-6">
+      {/* Barra Superior: Retorno Intuitivo al Catálogo */}
+      <div className="flex items-center justify-between pb-3 border-b border-black/[0.06] dark:border-white/[0.06]">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className={`group inline-flex items-center gap-2.5 h-9 px-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border ${
+            isDark
+              ? 'bg-[#16161a] hover:bg-zinc-800 text-zinc-200 hover:text-white border-white/[0.08] hover:border-white/[0.18] shadow-xs'
+              : 'bg-white hover:bg-zinc-100 text-zinc-800 hover:text-[#00345e] border-zinc-200 hover:border-zinc-300 shadow-xs'
+          }`}
+          title="Regresar al catálogo de cursos disponibles"
+        >
+          <ArrowLeftIcon className="h-4 w-4 text-[#00345e] dark:text-blue-400 transition-transform duration-200 group-hover:-translate-x-1" />
+          <span>Volver al Catálogo</span>
+        </button>
+
+        {course.category_name && (
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider border ${
+            isDark
+              ? 'bg-[#00345e]/30 text-blue-300 border-blue-500/30'
+              : 'bg-[#00345e]/08 text-[#00345e] border-[#00345e]/15'
+          }`}>
+            {course.category_name}
+          </span>
+        )}
+      </div>
+
+      {/* Grid Principal de 2 Columnas: Contenido Detallado y Sidebar Flotante Sticky */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+        {/* Columna Izquierda (Contenido y Módulos) */}
+        <div className="lg:col-span-7 xl:col-span-8">
+          <CourseHeader course={course} />
+          <CourseDates course={course} />
+          <CourseObjetives course={course} />
+          <CourseContent course={course} />
+          <CourseRequirements course={course} />
+          <CourseMaterials course={course} />
+        </div>
+
+        {/* Columna Derecha (Sidebar Ficha Técnica & CTA de Inscripción Sticky) */}
+        <div className="lg:col-span-5 xl:col-span-4 h-full">
+          <CourseSidebar
+            course={course}
+            onEnroll={handleEnrollClick}
+            enrolling={enrolling}
+          />
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <CourseHeader
-              course={course}
-              onEnroll={handleEnrollClick}
-              enrolling={enrolling}
-            />
-            <CourseDates course={course} />
-            <CourseObjetives course={course} />
-            <CourseContent course={course} />
-            <CourseRequirements course={course} />
-            <CourseMaterials course={course} />
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <CourseSidebar
-              course={course}
-              onEnroll={handleEnrollClick}
-              enrolling={enrolling}
-            />
-          </div>
-        </div>
-      </div>
-
+      {/* Modales de Inscripción y Validación */}
       <EnrollmentModal
         isOpen={showEnrollmentModal}
         onClose={() => {
@@ -293,9 +335,9 @@ export default function CourseDetail() {
           setDocumentFile(null);
         }}
         onConfirm={handleEnroll}
-        title="¿Confirmar inscripción?"
-        message={`¿Estás seguro de que deseas inscribirte como ${isExpositor ? 'Expositor' : 'Participante'} en el curso "${course?.title}"?${documentFile ? '\n\nArchivo adjunto: ' + documentFile.name : ''}`}
-        confirmText="Inscribirme"
+        title="¿Confirmar inscripción académica?"
+        message={`¿Estás seguro de que deseas inscribirte como ${isExpositor ? 'Expositor' : 'Participante'} en el curso "${course?.title}"?${documentFile ? '\n\nDocumento adjunto: ' + documentFile.name : ''}`}
+        confirmText="Inscribirme Ahora"
         cancelText="Cancelar"
         type="info"
         loading={enrolling}

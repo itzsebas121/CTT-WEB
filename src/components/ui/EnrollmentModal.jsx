@@ -22,36 +22,37 @@ export default function EnrollmentModal({ isOpen, onClose, enrollmentData, cours
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop sin color - solo para cerrar */}
+      {/* Backdrop estilo Apple Liquid Glass */}
       <div 
-        className="absolute inset-0"
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
         onClick={onClose}
+        aria-hidden="true"
       />
       
       {/* Modal */}
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full relative z-10 border border-gray-200">
+      <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl max-w-md w-full relative z-10 border border-slate-200/80 overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-slate-100">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all cursor-pointer border-0 bg-transparent"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
 
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-full ${isError ? 'bg-amber-50' : 'bg-green-50'}`}>
+          <div className="flex items-center gap-3.5">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-2xs border ${isError ? 'bg-amber-50 text-amber-600 border-amber-200/60' : 'bg-emerald-50 text-emerald-600 border-emerald-200/60'}`}>
               {isError ? (
-                <ExclamationCircleIcon className="h-8 w-8 text-amber-600" />
+                <ExclamationCircleIcon className="h-6 w-6" />
               ) : (
-                <CheckCircleIcon className="h-8 w-8 text-green-600" />
+                <CheckCircleIcon className="h-6 w-6" />
               )}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
                 {isError ? 'Atención' : 'Inscripción Exitosa'}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs text-slate-500 mt-0.5">
                 {isError ? 'No se pudo completar la inscripción' : 'Has sido inscrito correctamente'}
               </p>
             </div>
@@ -59,18 +60,19 @@ export default function EnrollmentModal({ isOpen, onClose, enrollmentData, cours
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 space-y-4">
           {isError ? (
             <div>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-                <p className="text-gray-700 text-center">
+              <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 mb-5">
+                <p className="text-xs text-amber-900 text-center font-medium leading-relaxed">
                   {error || 'Ocurrió un error al procesar la inscripción.'}
                 </p>
               </div>
 
               <button
+                type="button"
                 onClick={onClose}
-                className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+                className="w-full bg-primary hover:bg-primary-hover active:scale-95 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-xs transition-all cursor-pointer border-0"
               >
                 Entendido
               </button>
@@ -78,60 +80,54 @@ export default function EnrollmentModal({ isOpen, onClose, enrollmentData, cours
           ) : (
             <>
               {/* User Info */}
-              <div className="mb-4">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <UserCircleIcon className="h-5 w-5 text-gray-600 flex-shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-gray-500 font-medium">Estudiante</p>
-                    <p className="font-medium text-gray-900 truncate">{user.first_name|| 'N/A'} {user.first_last_name || 'N/A'}</p>
-                    <p className="text-xs text-gray-600 truncate">{user.identification || 'N/A'}</p>
-                    <p className="text-xs text-gray-600 truncate">{user.email || 'N/A'}</p>
-                  </div>
+              <div className="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200/70 flex items-center gap-3">
+                <UserCircleIcon className="h-8 w-8 text-primary/70 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estudiante</p>
+                  <p className="text-xs font-bold text-slate-800 truncate">{user.first_name || ''} {user.first_last_name || ''}</p>
+                  <p className="text-[11px] text-slate-500 truncate">{user.email || 'N/A'}</p>
                 </div>
               </div>
 
               {/* Course Info */}
-              <div className="mb-4">
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="flex items-start gap-3 mb-3">
-                    <AcademicCapIcon className="h-5 w-5 text-gray-600 flex-shrink-0 mt-0.5" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-gray-500 font-medium mb-1">Curso</p>
-                      <p className="font-medium text-gray-900">{courseName}</p>
-                    </div>
+              <div className="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200/70 space-y-2">
+                <div className="flex items-start gap-3">
+                  <AcademicCapIcon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Curso</p>
+                    <p className="text-xs font-bold text-slate-800 leading-snug">{courseName}</p>
                   </div>
-                  
-                  <div className="flex items-center gap-2 text-xs text-gray-600 pt-2 border-t border-gray-200">
-                    <ClockIcon className="h-4 w-4 flex-shrink-0" />
-                    <span>Inscrito el {enrollmentData?.data?.enrollment_date && formatDate(enrollmentData.data.enrollment_date)}</span>
-                  </div>
+                </div>
+                
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 pt-2 border-t border-slate-200/60">
+                  <ClockIcon className="h-3.5 w-3.5 flex-shrink-0 text-slate-400" />
+                  <span>Inscrito el {enrollmentData?.data?.enrollment_date ? formatDate(enrollmentData.data.enrollment_date) : 'Hoy'}</span>
                 </div>
               </div>
 
               {/* Status */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
-                  <span className="text-sm text-gray-700 font-medium">Estado</span>
-                  <span className="bg-green-600 text-white text-xs font-medium px-3 py-1 rounded-full">
-                    {enrollmentData?.data?.status || 'Interesado'}
-                  </span>
-                </div>
+              <div className="flex items-center justify-between p-3 bg-emerald-50/80 rounded-2xl border border-emerald-200/70">
+                <span className="text-xs text-emerald-800 font-semibold">Estado de Inscripción</span>
+                <span className="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-2xs">
+                  {enrollmentData?.data?.status || 'Interesado'}
+                </span>
               </div>
 
               {/* Action Button */}
               <button
+                type="button"
                 onClick={() => {
                   onClose();
                   navigate('/dashboard/cursos/inscrito');
                 }}
-                className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+                className="w-full bg-primary hover:bg-primary-hover active:scale-95 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-xs transition-all cursor-pointer border-0 mt-2"
               >
                 Generar orden de pago
               </button>
 
               {/* Footer Note */}
-              <p className="text-xs text-center text-gray-500 mt-4">
-                Para continuar con el proceso genera la orden de pago. Recibirás más información sobre el curso próximamente
+              <p className="text-[11px] text-center text-slate-400 leading-relaxed pt-1">
+                Para completar tu matrícula genera tu orden de pago en el siguiente paso.
               </p>
             </>
           )}

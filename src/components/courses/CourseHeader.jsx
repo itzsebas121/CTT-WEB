@@ -1,134 +1,232 @@
-import { ClockIcon, UserGroupIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { ClockIcon, AcademicCapIcon, MapPinIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import { resolveImageUrl } from "../../utils/helpers";
+import { useDashboardTheme } from "../../context/DashboardThemeContext";
 
-export default function CourseHeader({ course, onEnroll, enrolling }) {
-    const courseImage = resolveImageUrl(course?.course_image);
+export default function CourseHeader({ course }) {
+  const { isDark } = useDashboardTheme();
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-    return (
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
-            <div className="relative">
-                <img
-                    src={courseImage}
-                    alt={course.title}
-                    className="w-full h-64 sm:h-80 object-cover"
-                />
-                <div className="absolute top-4 left-4">
-                    <span className="bg-primary text-white px-3 py-1 rounded-full text-xl font-medium">
-                        {course.category_name}
-                    </span>
-                </div>
-                <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1 rounded-full text-xl font-medium bg ${
-                        course.status === 'activo'
-                        ? 'bg-green-100 text-black'
-                        :'bg-red-100 text-red-800'
-                    }`}>
-                        {course.status === 'activo' ? 'Activo' : 'Cerrado'}
-                    </span>
-                </div>
+  const rawImage = course?.course_image_detail || course?.course_image;
+  const courseImage = resolveImageUrl(rawImage);
+  const hasValidImage = Boolean(courseImage) && !imageError;
+
+  const hours = course?.requirements?.hours || {};
+  const totalHours = hours.total || course?.hours || 0;
+  const modality = course?.requirements?.modality || "Presencial";
+  const prices = course?.requirements?.prices || [];
+  const status = String(course?.status || "activo").toLowerCase();
+  const isActive = status === "activo";
+
+  return (
+    <div
+      className={`rounded-xl overflow-hidden border transition-colors mb-4 ${
+        isDark
+          ? 'bg-[#16161a] border-white/[0.08] shadow-md'
+          : 'bg-white border-black/[0.08] shadow-xs'
+      }`}
+    >
+      {/* Portada Compacta Hero — Sin cápsulas de IA ni adornos artificiales */}
+      <div className="relative w-full h-36 sm:h-44 md:h-48 overflow-hidden bg-zinc-900">
+        {hasValidImage ? (
+          <>
+            <img
+              src={courseImage}
+              alt={course.title}
+              onError={() => setImageError(true)}
+              onLoad={() => setImageLoaded(true)}
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
+          </>
+        ) : (
+          /* Portada Institucional sobria UTA (#00345e) */
+          <div className="w-full h-full relative flex items-center justify-between px-6 sm:px-8 bg-gradient-to-r from-[#00345e] via-[#002747] to-[#001729] overflow-hidden">
+            <div className="relative z-10 max-w-xl">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight line-clamp-2">
+                {course.title}
+              </h2>
+              <p className="text-xs text-blue-200/80 mt-1 font-normal">
+                Facultad de Ingeniería en Sistemas, Electrónica e Industrial — FISEI
+              </p>
             </div>
+          </div>
+        )}
 
-            <div className="p-8">
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                    {course.title}
-                </h1>
-
-                <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                    {course.description}
-                </p>
-
-                {/* Course Info Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                    <div className="bg-gray-50 rounded-xl p-4 text-center">
-                        <ClockIcon className="h-8 w-8 text-primary mx-auto mb-2" />
-                        <div className="text-sm font-medium text-gray-900">
-                            Duración
-                        </div>
-                        <div className="text-lg font-bold text-primary">
-                            {course.requirements?.hours?.total || 0} horas
-                        </div>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-xl p-4 text-center">
-                        <UserGroupIcon className="h-8 w-8 text-primary mx-auto mb-2" />
-                        <div className="text-sm font-medium text-gray-900">
-                            Nivel
-                        </div>
-                        <div className="text-lg font-bold text-primary">
-                            Todos los niveles
-                        </div>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-xl p-4 text-center">
-                        <MapPinIcon className="h-8 w-8 text-primary mx-auto mb-2" />
-                        <div className="text-sm font-medium text-gray-900">
-                            Modalidad
-                        </div>
-                        <div className="text-lg font-bold text-primary">
-                            {course.requirements?.modality || 'Presencial'}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Prices Section */}
-                <div className="mb-8">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Precios por Categoría</h3>
-                    <div className="space-y-3">
-                        {course.requirements?.prices?.map((price, index) => (
-                            <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-3 h-3 bg-primary rounded-full"></div>
-                                    <div>
-                                        <div className="font-medium text-gray-900">
-                                            {price.category}
-                                        </div>
-                                        <div className="text-sm text-gray-600">
-                                            Categoría {index + 1}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-2xl font-bold text-primary">
-                                        ${price.amount}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                        USD
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Highlighted Price for Enrollment */}
-                    {course.requirements?.prices?.length > 0 && (
-                        <div className="mt-6 p-4 bg-gradient-to-r from-primary to-primary-hover rounded-xl text-white">
-                            <div className="text-center">
-                                <div className="text-sm opacity-90 mb-1">Precio desde</div>
-                                <div className="text-3xl font-bold">
-                                    ${Math.min(...course.requirements.prices.map(p => p.amount))}
-                                </div>
-                                <div className="text-sm opacity-90 mt-1">
-                                    {course.requirements.prices.find(p => p.amount === Math.min(...course.requirements.prices.map(p => p.amount)))?.category}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Enroll Button */}
-                <div className="text-center">
-                    <button 
-                        onClick={onEnroll}
-                        disabled={enrolling}
-                        className="bg-primary hover:bg-primary-hover text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {enrolling ? 'Inscribiendo...' : 'Inscríbete Ahora'}
-                    </button>
-                    <p className="text-sm text-gray-500 mt-2">
-                        Selecciona tu categoría al momento de la inscripción
-                    </p>
-                </div>
-            </div>
+        {/* Solo Badges de Estado y Categoría Esenciales */}
+        <div className="absolute top-3 left-3 z-20">
+          <span className="inline-flex items-center px-3 py-0.5 rounded-md text-xs font-semibold tracking-wide border shadow-xs backdrop-blur-md bg-white/90 text-[#00345e] border-white/40 dark:bg-[#00345e]/80 dark:text-blue-200 dark:border-blue-400/30">
+            {course.category_name || "Tecnología"}
+          </span>
         </div>
-    );
+
+        <div className="absolute top-3 right-3 z-20">
+          <span
+            className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md text-xs font-semibold tracking-wide border shadow-xs backdrop-blur-md ${
+              isActive
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30'
+                : 'bg-zinc-500/20 text-zinc-300 border-zinc-400/30'
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isActive ? 'bg-emerald-400' : 'bg-zinc-400'
+              }`}
+            />
+            {isActive ? 'Convocatoria Abierta' : 'Convocatoria Finalizada'}
+          </span>
+        </div>
+      </div>
+
+      {/* Cuerpo Principal del Curso — Compacto y Editorial */}
+      <div className="p-4 sm:p-5">
+        <h1 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-snug ${
+          isDark ? 'text-white' : 'text-zinc-900'
+        }`}>
+          {course.title}
+        </h1>
+
+        {course.description && (
+          <p className={`text-xs sm:text-sm leading-relaxed mt-2.5 font-normal ${
+            isDark ? 'text-zinc-300' : 'text-zinc-600'
+          }`}>
+            {course.description}
+          </p>
+        )}
+
+        {/* Grid Compacto de Métricas Clave */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-5">
+          {/* Card Duración */}
+          <div className={`rounded-lg p-3 flex flex-col justify-between border transition-colors ${
+            isDark
+              ? 'bg-[#121215] border-white/[0.06]'
+              : 'bg-zinc-50/80 border-black/[0.06]'
+          }`}>
+            <div className="flex items-center gap-1.5 mb-1">
+              <ClockIcon className="h-3.5 w-3.5 text-[#00345e] dark:text-blue-400" />
+              <span className={`text-[10px] font-semibold uppercase tracking-wider ${
+                isDark ? 'text-zinc-400' : 'text-zinc-500'
+              }`}>
+                Duración Total
+              </span>
+            </div>
+            <div>
+              <div className={`text-base font-bold tracking-tight ${
+                isDark ? 'text-zinc-100' : 'text-zinc-900'
+              }`}>
+                {totalHours} horas
+              </div>
+              {(hours.inPerson || hours.autonomous) && (
+                <p className={`text-[10px] mt-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                  {hours.inPerson ? `${hours.inPerson}h presencial` : ''}
+                  {hours.inPerson && hours.autonomous ? ' • ' : ''}
+                  {hours.autonomous ? `${hours.autonomous}h autónomo` : ''}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Card Nivel */}
+          <div className={`rounded-lg p-3 flex flex-col justify-between border transition-colors ${
+            isDark
+              ? 'bg-[#121215] border-white/[0.06]'
+              : 'bg-zinc-50/80 border-black/[0.06]'
+          }`}>
+            <div className="flex items-center gap-1.5 mb-1">
+              <AcademicCapIcon className="h-3.5 w-3.5 text-[#00345e] dark:text-blue-400" />
+              <span className={`text-[10px] font-semibold uppercase tracking-wider ${
+                isDark ? 'text-zinc-400' : 'text-zinc-500'
+              }`}>
+                Nivel Académico
+              </span>
+            </div>
+            <div>
+              <div className={`text-base font-bold tracking-tight ${
+                isDark ? 'text-zinc-100' : 'text-zinc-900'
+              }`}>
+                Todos los niveles
+              </div>
+              <p className={`text-[10px] mt-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                Sin requisitos excluyentes
+              </p>
+            </div>
+          </div>
+
+          {/* Card Modalidad */}
+          <div className={`rounded-lg p-3 flex flex-col justify-between border transition-colors ${
+            isDark
+              ? 'bg-[#121215] border-white/[0.06]'
+              : 'bg-zinc-50/80 border-black/[0.06]'
+          }`}>
+            <div className="flex items-center gap-1.5 mb-1">
+              <MapPinIcon className="h-3.5 w-3.5 text-[#00345e] dark:text-blue-400" />
+              <span className={`text-[10px] font-semibold uppercase tracking-wider ${
+                isDark ? 'text-zinc-400' : 'text-zinc-500'
+              }`}>
+                Modalidad
+              </span>
+            </div>
+            <div>
+              <div className={`text-base font-bold tracking-tight ${
+                isDark ? 'text-zinc-100' : 'text-zinc-900'
+              }`}>
+                {modality}
+              </div>
+              <p className={`text-[10px] mt-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                Asistencia y certificación
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Sección de Inversión Compacta */}
+        {prices.length > 0 && (
+          <div className="mt-5 pt-4 border-t border-black/[0.06] dark:border-white/[0.06]">
+            <div className="flex items-center gap-2 mb-3">
+              <CurrencyDollarIcon className="w-4 h-4 text-[#00345e] dark:text-blue-400" />
+              <h3 className={`text-xs font-semibold uppercase tracking-wider ${
+                isDark ? 'text-zinc-300' : 'text-zinc-800'
+              }`}>
+                Inversión por Categoría
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {prices.map((price, index) => (
+                <div
+                  key={index}
+                  className={`rounded-lg p-2.5 border transition-all flex items-center justify-between ${
+                    isDark
+                      ? 'bg-[#121215] border-white/[0.06]'
+                      : 'bg-zinc-50/80 border-black/[0.06]'
+                  }`}
+                >
+                  <span className={`text-xs font-medium truncate pr-2 ${
+                    isDark ? 'text-zinc-300' : 'text-zinc-700'
+                  }`}>
+                    {price.category}
+                  </span>
+                  <div className="flex items-baseline gap-1 flex-shrink-0">
+                    <span className={`text-base font-bold tracking-tight ${
+                      isDark ? 'text-white' : 'text-[#00345e]'
+                    }`}>
+                      ${price.amount}
+                    </span>
+                    <span className={`text-[10px] font-medium ${
+                      isDark ? 'text-zinc-500' : 'text-zinc-400'
+                    }`}>
+                      USD
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

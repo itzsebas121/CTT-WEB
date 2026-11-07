@@ -27,17 +27,19 @@ export const dashboardMenuItems = [
   { 
     name: "Cursos", 
     path: "/dashboard/cursos",
+    icon: "AcademicCapIcon",
     subItems: [
-      { name: "Cursos Disponibles", path: "/dashboard/cursos/disponibles" },
-      { name: "Cursos Inscrito", path: "/dashboard/cursos/inscrito" }
+      { name: "Cursos Disponibles", path: "/dashboard/cursos/disponibles", icon: "BookOpenIcon" },
+      { name: "Cursos Inscritos", path: "/dashboard/cursos/inscrito", icon: "CheckCircleIcon" }
     ]
   },
-   { 
-    name: "Ordenes de Pago", 
+  { 
+    name: "Órdenes de Pago", 
     path: "/dashboard/ordenes",
+    icon: "CreditCardIcon",
     subItems: [
-      { name: "Ordenes Pendientes", path: "/dashboard/ordenes/pendientes" },
-      { name: "Ordenes Completadas", path: "/dashboard/ordenes/completadas" }
+      { name: "Órdenes Pendientes", path: "/dashboard/ordenes/pendientes", icon: "ClockIcon" },
+      { name: "Órdenes Completadas", path: "/dashboard/ordenes/completadas", icon: "DocumentCheckIcon" }
     ]
   },
 ];

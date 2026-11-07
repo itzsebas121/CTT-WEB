@@ -38,9 +38,9 @@ export default function ConfirmDialog({
       buttonBg: 'bg-red-600 hover:bg-red-700',
     },
     info: {
-      iconBg: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-      buttonBg: 'bg-blue-600 hover:bg-blue-700',
+      iconBg: 'bg-[#00345e]/20',
+      iconColor: 'text-[#5b8dd8]',
+      buttonBg: 'bg-[#00345e] hover:bg-[#002747]',
     },
   };
 
@@ -62,50 +62,50 @@ export default function ConfirmDialog({
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-auto">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0  bg-opacity-50 transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
         onClick={handleCancel}
       />
       
       {/* Modal */}
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full relative z-10 border border-gray-200 animate-fade-in pointer-events-auto">
+      <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl max-w-md w-full relative z-10 border border-slate-200/80 p-6 sm:p-7 animate-fade-in pointer-events-auto">
         {/* Botón cerrar */}
         <button
           onClick={handleCancel}
           disabled={loading}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-0 bg-transparent"
         >
           <XMarkIcon className="h-5 w-5" />
         </button>
 
-        <div className="p-6">
+        <div>
           {/* Icono */}
-          <div className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full ${config.iconBg} mb-4`}>
+          <div className={`mx-auto flex items-center justify-center h-12 w-12 rounded-2xl ${config.iconBg} mb-4 shadow-2xs`}>
             <ExclamationTriangleIcon className={`h-6 w-6 ${config.iconColor}`} />
           </div>
 
           {/* Título */}
-          <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+          <h3 className="text-lg font-bold text-slate-900 text-center mb-2">
             {title}
           </h3>
 
           {/* Mensaje */}
-          <p className="text-sm text-gray-600 text-center mb-6">
+          <p className="text-xs text-slate-500 text-center mb-6 leading-relaxed">
             {message}
           </p>
 
           {/* Botones */}
-          <div className="flex gap-3">
+          <div className="flex gap-2.5">
             <button
               onClick={handleCancel}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2.5 border border-slate-200/80 rounded-xl text-slate-700 text-xs font-semibold hover:bg-slate-50 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer bg-white"
             >
               {cancelText}
             </button>
             <button
               onClick={handleConfirm}
               disabled={loading}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${config.buttonBg}`}
+              className={`flex-1 px-4 py-2.5 rounded-xl text-white text-xs font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer border-0 ${config.buttonBg}`}
             >
               {loading ? (
                 <span className="flex items-center justify-center">

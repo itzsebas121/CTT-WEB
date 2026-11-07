@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { getUserEnrollments, uploadPaymentReceiptTemp } from "../../api/inscripciones";
 import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import { Table } from "../../components/ui";
+import { useDashboardTheme } from "../../context/DashboardThemeContext";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -16,18 +17,18 @@ const filters = {
 };
 
 export default function CursosInscritos() {
-  const [enrollments, setEnrollments] = useState([]);
+  const [rawEnrollments, setRawEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(7);
   const [statusFilter, setStatusFilter] = useState(null);
   const [uploadSuccessMessage, setUploadSuccessMessage] = useState("");
+  const { isDark } = useDashboardTheme();
   const navigate = useNavigate();
 
   const handleUploadReceipt = useCallback(async (enrollmentId, courseTitle, event) => {
     const file = event.target.files?.[0];
-    // Permite volver a seleccionar el mismo archivo si falla o se desea reintentar.
     event.target.value = "";
 
     if (!file) return;
@@ -47,17 +48,8 @@ export default function CursosInscritos() {
       } else {
         setError(err.message || "No se pudo subir el comprobante.");
       }
-    } finally {
-      // No-op
     }
   }, [navigate]);
-
-  /*const handleGeneratePaymentOrder = (enrollmentId, courseName) => {
-    // Aquí puedes implementar la lógica para generar la orden de pago
-    console.log('Generar orden de pago para inscripción:', enrollmentId, courseName);
-    // TODO: Implementar lógica de generación de orden de pago
-    alert(`Generar orden de pago para: ${courseName}`);
-  };*/
 
   const loadEnrollments = useCallback(async (enrollmentStatus = null) => {
     try {
@@ -72,60 +64,8 @@ export default function CursosInscritos() {
 
       const userData = JSON.parse(user);
       const response = await getUserEnrollments(userData.id, enrollmentStatus);
-
-      // La respuesta tiene la estructura: { user_id, total, enrollments }
       const enrollmentsArray = response.enrollments || [];
-
-      // Transformar los datos para la tabla
-      const transformedEnrollments = enrollmentsArray.map((enrollment) => {
-        // Formatear la fecha de inscripción
-        const enrollmentDate = new Date(enrollment.enrollment_date);
-        const formattedDate = enrollmentDate.toLocaleDateString('es-ES', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-
-        const apiStatus = enrollment.status || "Interesado";
-
-        return {
-          titulo: enrollment.course_title || "Sin título",
-          categoria: enrollment.course_category_name || "Sin categoría",
-          fecha_inscripcion: formattedDate,
-          estado: API_ENROLLMENT_STATUSES.includes(apiStatus) ? apiStatus : "Interesado",
-          id: enrollment.id,
-          courseId: enrollment.id_course,
-          courseImage: enrollment.course_image,
-          detalles: (
-            <div className="flex gap-2">
-              <button
-                onClick={() => navigate(`/dashboard/curso/${enrollment.id_course}`)}
-                className="text-primary hover:text-primary-hover"
-                title="Ver detalles del curso"
-              >
-                <EyeIcon className="h-5 w-5 inline-block" />
-              </button>
-              <label
-                htmlFor={`file_input_${enrollment.id}`}
-                className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors cursor-pointer"
-              >
-                Subir Comprobante
-              </label>
-              <input
-                type="file"
-                className="hidden"
-                accept="application/pdf"
-                title="Subir comprobante de pago"
-                name="file_input"
-                id={`file_input_${enrollment.id}`}
-                onChange={(e) => handleUploadReceipt(enrollment.id, enrollment.course_title || "curso", e)}
-              />
-            </div>
-          ),
-        };
-      });
-
-      setEnrollments(transformedEnrollments);
+      setRawEnrollments(enrollmentsArray);
     } catch (err) {
       if (err.message === 'UNAUTHORIZED') {
         localStorage.removeItem('token');
@@ -138,7 +78,88 @@ export default function CursosInscritos() {
     } finally {
       setLoading(false);
     }
-  }, [navigate, handleUploadReceipt]);
+  }, [navigate]);
+
+  const enrollments = useMemo(() => {
+    return rawEnrollments.map((enrollment) => {
+      const enrollmentDate = new Date(enrollment.enrollment_date);
+      const formattedDate = enrollmentDate.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      const apiStatus = enrollment.status || "Interesado";
+
+      return {
+        titulo: (
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+            <span className={`font-semibold ${isDark ? 'text-zinc-100' : 'text-zinc-900'}`}>
+              {enrollment.course_title || "Sin título"}
+            </span>
+          </div>
+        ),
+        categoria: (
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap border ${
+            isDark
+              ? 'bg-[#00345e]/40 text-blue-300 border-blue-500/40'
+              : 'bg-[#00345e]/08 text-[#00345e] border-[#00345e]/20'
+          }`}>
+            {enrollment.course_category_name || "Sin categoría"}
+          </span>
+        ),
+        fecha_inscripcion: (
+          <span className={isDark ? 'text-zinc-300' : 'text-zinc-700'}>
+            {formattedDate}
+          </span>
+        ),
+        estado: (
+          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
+            isDark
+              ? 'bg-zinc-800 text-zinc-200 border border-white/10'
+              : 'bg-zinc-100 text-zinc-700 border border-zinc-200'
+          }`}>
+            {API_ENROLLMENT_STATUSES.includes(apiStatus) ? apiStatus : "Interesado"}
+          </span>
+        ),
+        id: enrollment.id,
+        courseId: enrollment.id_course,
+        courseImage: enrollment.course_image,
+        detalles: (
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => navigate(`/dashboard/curso/${enrollment.id_course}`)}
+              className={`h-8 px-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center border ${
+                isDark
+                  ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white border-white/10'
+                  : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 border-zinc-200'
+              }`}
+              title="Ver detalles del curso"
+            >
+              <EyeIcon className="h-4 w-4" />
+            </button>
+            <label
+              htmlFor={`file_input_${enrollment.id}`}
+              className="h-8 px-3 bg-[#00345e] hover:bg-[#002747] text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center justify-center whitespace-nowrap shadow-xs"
+            >
+              Subir Comprobante
+            </label>
+            <input
+              type="file"
+              className="hidden"
+              accept="application/pdf"
+              title="Subir comprobante de pago"
+              name="file_input"
+              id={`file_input_${enrollment.id}`}
+              onChange={(e) => handleUploadReceipt(enrollment.id, enrollment.course_title || "curso", e)}
+            />
+          </div>
+        ),
+      };
+    });
+  }, [rawEnrollments, isDark, navigate, handleUploadReceipt]);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: false, mirror: true });
@@ -172,20 +193,35 @@ export default function CursosInscritos() {
   };
 
   return (
-    <div className="p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Mis Cursos Inscritos</h1>
+    <div className="w-full space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl sm:text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+            Mis Cursos Inscritos
+          </h1>
+          <p className={`text-xs sm:text-sm mt-1 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+            Consulta el estado de tus inscripciones académicas y sube tus comprobantes de pago.
+          </p>
+        </div>
       </div>
 
       <div className="mb-4">
         {uploadSuccessMessage && (
-          <div className="mb-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="status">
+          <div className={`mb-3 px-4 py-3 rounded-lg text-xs border ${
+            isDark
+              ? 'bg-emerald-950/40 border-emerald-800/40 text-emerald-300'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+          }`} role="status">
             <span className="block sm:inline">{uploadSuccessMessage}</span>
           </div>
         )}
 
         {error ? (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div className={`px-4 py-3 rounded-lg text-xs border ${
+            isDark
+              ? 'bg-red-950/40 border-red-800/40 text-red-300'
+              : 'bg-red-50 border-red-200 text-red-800'
+          }`} role="alert">
             <strong className="font-bold">Error: </strong>
             <span className="block sm:inline">{error}</span>
           </div>
@@ -207,11 +243,16 @@ export default function CursosInscritos() {
       </div>
 
       {!loading && !error && enrollments.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <p className="text-lg mb-2">No tienes cursos inscritos</p>
+        <div className={`text-center py-12 rounded-xl border max-w-sm mx-auto p-6 ${
+          isDark
+            ? 'text-zinc-500 bg-[#16161a] border-white/[0.08]'
+            : 'text-zinc-500 bg-white border-black/[0.08] shadow-xs'
+        }`}>
+          <p className={`text-sm font-semibold mb-1 ${isDark ? 'text-zinc-300' : 'text-zinc-800'}`}>No tienes cursos inscritos</p>
+          <p className="text-xs text-zinc-500 mb-4">Inscríbete en los cursos del catálogo para visualizarlos aquí.</p>
           <button
             onClick={() => navigate('/dashboard/cursos/disponibles')}
-            className="mt-4 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded"
+            className="bg-[#00345e] hover:bg-[#002747] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer"
           >
             Ver cursos disponibles
           </button>

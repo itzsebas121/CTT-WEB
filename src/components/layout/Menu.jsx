@@ -1,177 +1,294 @@
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { dashboardMenuItems } from '../../constants/navigation'
-import { getUser, clearAuthData } from '../../utils/auth'
-import { ConfirmDialog } from '../ui'
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getUser, clearAuthData } from '../../utils/auth';
+import ConfirmDialog from '../ui/ConfirmDialog';
+import logoUTASidebar from '../../assets/logoUTA-sidebar.png';
+import logoUTASidebarWhite from '../../assets/logoUTA-sidebar-white.png';
+import { useDashboardTheme } from '../../context/DashboardThemeContext';
+import {
+  BookOpenIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  DocumentCheckIcon,
+  HomeIcon,
+  ArrowLeftOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
 
-export default function Menu () {
-  const [isOpen, setIsOpen] = useState(false)
-  const [user, setUser] = useState(null)
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const navigate = useNavigate()
+export default function Menu({ isCollapsed = false, onToggleCollapse }) {
+  const [isOpenMobile, setIsOpenMobile] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const { isDark } = useDashboardTheme();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = getUser()
-    setUser(userData)
-  }, [])
-
-  const handleLogoutClick = () => {
-    setShowLogoutConfirm(true)
-  }
+    const userData = getUser();
+    setUser(userData);
+  }, []);
 
   const handleLogoutConfirm = () => {
-    clearAuthData()
-    setShowLogoutConfirm(false)
-    navigate('/')
-  }
+    clearAuthData();
+    setShowLogoutConfirm(false);
+    navigate('/');
+  };
 
-  const handleLogoutCancel = () => {
-    setShowLogoutConfirm(false)
-  }
+  const getUserInitials = () => {
+    if (!user) return 'ES';
+    const first = user.first_name ? user.first_name.charAt(0) : (user.nombre ? user.nombre.charAt(0) : 'E');
+    const last = user.first_last_name ? user.first_last_name.charAt(0) : (user.apellido ? user.apellido.charAt(0) : 'S');
+    return (first + last).toUpperCase();
+  };
 
-  const handleGoHome = () => {
-    navigate('/')
-    setIsOpen(false)
-  }
+  const navGroups = [
+    {
+      group: 'Home',
+      items: [
+        {
+          name: 'Página Principal',
+          path: '/',
+          icon: HomeIcon,
+          exact: true
+        }
+      ]
+    },
+    {
+      group: 'Área Académica',
+      items: [
+        {
+          name: 'Cursos Disponibles',
+          path: '/dashboard/cursos/disponibles',
+          icon: BookOpenIcon
+        },
+        {
+          name: 'Cursos Inscritos',
+          path: '/dashboard/cursos/inscrito',
+          icon: CheckCircleIcon
+        }
+      ]
+    },
+    {
+      group: 'Gestión y Pagos',
+      items: [
+        {
+          name: 'Órdenes Pendientes',
+          path: '/dashboard/ordenes/pendientes',
+          icon: ClockIcon
+        },
+        {
+          name: 'Órdenes Completadas',
+          path: '/dashboard/ordenes/completadas',
+          icon: DocumentCheckIcon
+        }
+      ]
+    }
+  ];
 
   return (
     <>
-      {/* Botón hamburguesa - solo visible en pantallas pequeñas y medianas */}
+      {/* Botón flotante para dispositivos móviles */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-1 left-2 z-50 p-2 bg-primary text-white rounded"
+        type="button"
+        onClick={() => setIsOpenMobile(!isOpenMobile)}
+        className={`lg:hidden fixed bottom-4 right-4 z-50 p-3 rounded-full shadow-2xl border cursor-pointer flex items-center justify-center transition-all duration-200 active:scale-95 ${
+          isDark
+            ? 'bg-zinc-900/90 text-white border-white/20'
+            : 'bg-white text-zinc-900 border-zinc-300'
+        }`}
+        aria-label={isOpenMobile ? "Cerrar menú" : "Abrir menú"}
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {isOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
+        {isOpenMobile ? <XMarkIcon className="w-5 h-5" /> : <Bars3Icon className="w-5 h-5" />}
       </button>
 
-      {/* Overlay - solo visible cuando el menú está abierto en móvil */}
-      {isOpen && (
+      {/* Backdrop móvil */}
+      <div
+        className={`lg:hidden fixed inset-0 backdrop-blur-sm z-30 transition-opacity duration-300 ${
+          isOpenMobile ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        } ${isDark ? 'bg-black/75' : 'bg-black/40'}`}
+        onClick={() => setIsOpenMobile(false)}
+        aria-hidden="true"
+      />
+
+      {/* Barra lateral flotante (compatible con Claro y Oscuro) */}
+      <aside
+        className={`
+          ${isCollapsed ? 'lg:w-[72px]' : 'lg:w-60'} w-64
+          flex flex-col justify-between flex-shrink-0
+          fixed lg:static inset-y-0 left-0 z-40 h-full select-none rounded-2xl
+          transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]
+          ${isDark
+            ? 'bg-[#09090b] text-zinc-300 border border-white/[0.08]'
+            : 'bg-white text-zinc-700 border border-black/[0.08] shadow-sm'
+          }
+          ${isOpenMobile ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        {/* Cabecera: Logo Oficial UTA más grande y sin icono de notificaciones */}
         <div
-          className="lg:hidden fixed inset-0 bg-opacity-50 z-30"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Menú lateral */}
-      <aside className={`
-        w-64 bg-primary text-white flex flex-col
-        fixed lg:static inset-y-0 left-0 z-40
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        {/* Encabezado del panel */}
-        <div className="p-4 text-xl font-bold border-b border-white">
-           CTT - Estudiantes
-        </div>
-
-        {/* Botón ir a página principal */}
-        <div className="p-4 border-b border-white/30">
+          className={`pt-3.5 pb-3 px-3 flex items-center justify-center border-b transition-colors ${
+            isDark ? 'border-white/[0.06]' : 'border-black/[0.06]'
+          }`}
+        >
           <button
-            onClick={handleGoHome}
-            className="w-full flex items-center justify-center space-x-2 p-2 bg-white text-primary rounded hover:bg-gray-100 transition-colors duration-200 font-semibold"
+            type="button"
+            onClick={() => navigate('/')}
+            className={`w-full flex items-center justify-center p-1.5 rounded-xl transition-colors cursor-pointer border-0 bg-transparent ${
+              isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-black/[0.03]'
+            }`}
+            title="Universidad Técnica de Ambato"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span>Página Principal</span>
+            <img
+              src={isDark ? logoUTASidebarWhite : logoUTASidebar}
+              alt="Universidad Técnica de Ambato"
+              className={`transition-all duration-300 object-contain bg-transparent ${
+                isCollapsed
+                  ? 'h-8 w-auto'
+                  : 'h-11 sm:h-12 w-auto max-w-full drop-shadow-2xs'
+              }`}
+            />
           </button>
         </div>
 
-        {/* Menú dinámico */}
-        <nav className="flex-1 p-4 space-y-2">
-          {dashboardMenuItems.map((item) => (
-            <div key={item.path}>
-              {item.subItems ? (
-                <>
-                  {/* Item con subsecciones */}
-                  <div className="p-2 text-white font-semibold">
-                    {item.name}
-                  </div>
-                  
-                  {/* Subsecciones siempre visibles */}
-                  <div className="ml-4 space-y-1">
-                    {item.subItems.map((subItem) => (
-                      <NavLink
-                        key={subItem.path}
-                        to={subItem.path}
-                        onClick={() => setIsOpen(false)}
-                        className={({ isActive }) =>
-                          `block p-2 rounded transition-colors duration-200 text-sm
-                          ${isActive ? "bg-white font-semibold NavLink" : "text-white hover:bg-white hover:!text-primary"}`
-                        }
-                      >
-                        {subItem.name}
-                      </NavLink>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                /* Items sin subsecciones */
-                <NavLink
-                  to={item.path}
-                  onClick={() => setIsOpen(false)}
-                  className={({ isActive }) =>
-                    `block p-2 rounded transition-colors duration-200 
-                    ${isActive ? "bg-white font-semibold NavLink" : " text-white hover:bg-white hover:!text-primary"}`
-                  }
-                >
-                  {item.name}
-                </NavLink>
+        {/* Navegación con Secciones */}
+        <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-3.5 scrollbar-none">
+          {navGroups.map((group, groupIdx) => (
+            <div key={groupIdx} className="space-y-1">
+              {!isCollapsed && (
+                <div className="px-2.5 pt-1 pb-0.5">
+                  <span
+                    className={`text-[10px] font-semibold uppercase tracking-wider ${
+                      isDark ? 'text-zinc-500' : 'text-zinc-400'
+                    }`}
+                  >
+                    {group.group}
+                  </span>
+                </div>
               )}
+
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      end={item.exact}
+                      onClick={() => setIsOpenMobile(false)}
+                      className={({ isActive }) => {
+                        let baseClasses = `flex items-center ${
+                          isCollapsed ? 'justify-center px-0' : 'px-2.5'
+                        } py-2 rounded-lg text-xs font-medium transition-all group `;
+
+                        if (isActive) {
+                          return isDark
+                            ? baseClasses + 'bg-white/[0.08] text-white border border-white/[0.06] shadow-xs'
+                            : baseClasses + 'bg-[#00345e] text-white shadow-xs font-semibold';
+                        }
+                        return isDark
+                          ? baseClasses + 'text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04]'
+                          : baseClasses + 'text-zinc-600 hover:text-zinc-900 hover:bg-black/[0.04]';
+                      }}
+                      title={isCollapsed ? item.name : undefined}
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0 transition-colors" />
+                      {!isCollapsed && (
+                        <span className="ml-2.5 truncate">{item.name}</span>
+                      )}
+                    </NavLink>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </nav>
 
-        {/* Información del usuario */}
-        {user && (
-          <div className="p-4 border-t border-white/30">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary font-bold text-xl">
-                {user.nombre?.charAt(0).toUpperCase() || user.first_name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate">
-                  {user.first_name + " " + user.first_last_name || 'Usuario'}
-                </p>
-                <p className="text-xs text-white/80 truncate">
-                  {user.email || ''}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Botón de cerrar sesión */}
-        <div className="p-4 border-t border-white/30">
-          <button
-            onClick={handleLogoutClick}
-            className="w-full flex items-center justify-center space-x-2 p-2 bg-red-700 text-white rounded hover:bg-red-800 transition-colors duration-200 font-semibold"
+        {/* Dock Inferior: Solo Usuario y Versión (sin botón innecesario de sistema) */}
+        <div
+          className={`p-2.5 border-t space-y-2 ${
+            isDark ? 'border-white/[0.06]' : 'border-black/[0.06]'
+          }`}
+        >
+          {/* User Account Dock */}
+          <div
+            className={`w-full flex items-center ${
+              isCollapsed ? 'justify-center p-1.5' : 'justify-between p-2'
+            } rounded-xl border transition-colors ${
+              isDark
+                ? 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05]'
+                : 'bg-zinc-50 border-black/[0.06] hover:bg-zinc-100/80'
+            }`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Cerrar Sesión</span>
-          </button>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div
+                className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-[11px] flex-shrink-0 shadow-xs border ${
+                  isDark
+                    ? 'bg-zinc-800 text-zinc-200 border-white/10'
+                    : 'bg-[#00345e] text-white border-[#00345e]/20'
+                }`}
+              >
+                {getUserInitials()}
+              </div>
+
+              {!isCollapsed && (
+                <div className="min-w-0 flex-1 truncate text-left">
+                  <p
+                    className={`text-[10px] font-semibold uppercase tracking-wider leading-none ${
+                      isDark ? 'text-zinc-500' : 'text-zinc-400'
+                    }`}
+                  >
+                    Estudiante
+                  </p>
+                  <p
+                    className={`text-xs font-medium truncate mt-0.5 ${
+                      isDark ? 'text-zinc-300' : 'text-zinc-800'
+                    }`}
+                  >
+                    {user?.email || 'estudiante@uta.edu.ec'}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {!isCollapsed && (
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(true)}
+                className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer border-0 bg-transparent flex-shrink-0"
+                title="Cerrar Sesión"
+                aria-label="Cerrar Sesión"
+              >
+                <ArrowLeftOnRectangleIcon className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Versión Footer */}
+          {!isCollapsed && (
+            <div className="text-center pt-0.5">
+              <span
+                className={`text-[10px] font-mono tracking-tight ${
+                  isDark ? 'text-zinc-600' : 'text-zinc-400'
+                }`}
+              >
+                Version v2.4.0
+              </span>
+            </div>
+          )}
         </div>
       </aside>
 
-      {/* Diálogo de confirmación de cierre de sesión */}
+      {/* Diálogo de Confirmación */}
       <ConfirmDialog
         isOpen={showLogoutConfirm}
-        onClose={handleLogoutCancel}
+        onClose={() => setShowLogoutConfirm(false)}
         onConfirm={handleLogoutConfirm}
-        title="¿Cerrar sesión?"
-        message="Estás a punto de cerrar tu sesión. ¿Deseas continuar?"
+        title="¿Deseas cerrar sesión?"
+        message="Se cerrará tu sesión activa en este dispositivo."
         confirmText="Cerrar Sesión"
         cancelText="Cancelar"
         type="danger"
       />
     </>
-  )
+  );
 }
