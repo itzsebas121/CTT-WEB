@@ -5,9 +5,9 @@ const eventsHeroSlides = [
   {
     id: 1,
     image:
-      'https://ctt-talleresfisei.uta.edu.ec/img/carrusel/carrusel_2.jpeg',
-    title: 'Eventos',
-    subtitle: 'Conoce los próximos eventos del CTT',
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80',
+    title: 'Eventos y Congresos Académicos',
+    subtitle: 'Conoce los próximos simposios, talleres y conferencias de la FISEI',
   },
 ];
 
@@ -43,7 +43,7 @@ const upcomingEvents = [
 
 export default function Events() {
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-[#121215] transition-colors min-h-screen">
       <Carousel
         slides={eventsHeroSlides}
         height="400px"
@@ -53,8 +53,8 @@ export default function Events() {
 
       <section className="container mx-auto px-5 py-12">
         <div className="max-w-3xl mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary">Próximos eventos</h1>
-          <p className="mt-3 text-gray-600 text-base md:text-lg">
+          <h1 className="text-3xl md:text-4xl font-bold text-primary dark:text-[#5b8dd8]">Próximos eventos</h1>
+          <p className="mt-3 text-gray-600 dark:text-zinc-400 text-base md:text-lg">
             Participa en actividades académicas, talleres y espacios de innovación organizados por el CTT.
           </p>
         </div>
@@ -63,26 +63,26 @@ export default function Events() {
           {upcomingEvents.map((event) => (
             <article
               key={event.id}
-              className="rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow"
+              className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#16161a] shadow-sm p-6 hover:shadow-md transition-all"
             >
-              <h2 className="text-xl font-semibold text-primary mb-4">{event.title}</h2>
+              <h2 className="text-xl font-bold text-primary dark:text-white mb-4">{event.title}</h2>
 
-              <div className="space-y-2 text-sm text-gray-700 mb-4">
+              <div className="space-y-2 text-sm text-gray-700 dark:text-zinc-300 mb-4">
                 <p className="flex items-center gap-2">
-                  <CalendarDaysIcon className="h-5 w-5 text-primary" />
+                  <CalendarDaysIcon className="h-5 w-5 text-primary dark:text-blue-400" />
                   {event.date}
                 </p>
                 <p className="flex items-center gap-2">
-                  <ClockIcon className="h-5 w-5 text-primary" />
+                  <ClockIcon className="h-5 w-5 text-primary dark:text-blue-400" />
                   {event.time}
                 </p>
                 <p className="flex items-center gap-2">
-                  <MapPinIcon className="h-5 w-5 text-primary" />
+                  <MapPinIcon className="h-5 w-5 text-primary dark:text-blue-400" />
                   {event.location}
                 </p>
               </div>
 
-              <p className="text-gray-600 text-sm leading-6">{event.description}</p>
+              <p className="text-gray-600 dark:text-zinc-400 text-sm leading-6">{event.description}</p>
             </article>
           ))}
         </div>

@@ -1,82 +1,52 @@
-import { DocumentMagnifyingGlassIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline'
-import { useState, useEffect } from 'react'
 import ItemHeader from '../ui/ItemHeader'
 import { headerNavigation } from '../../constants/navigation'
 import logoUta from '../../assets/logoUTA.webp'
+import logoUtaWhite from '../../assets/logoUTA-sidebar-white.png'
 import logoCtt from '../../assets/logoCTT.webp'
 import logoUtaPequeno from '../../assets/LogoUTAPequeño.png'
+import { useDashboardTheme } from '../../context/DashboardThemeContext'
 
 export default function Header() {
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      
-      // Si estamos en el top, siempre mostrar el header
-      if (currentScrollY < 10) {
-        setIsVisible(true)
-      } 
-      // Si hacemos scroll hacia abajo, ocultar
-      else if (currentScrollY > lastScrollY) {
-        setIsVisible(false)
-      } 
-      // Si hacemos scroll hacia arriba, mostrar
-      else {
-        setIsVisible(true)
-      }
-      
-      setLastScrollY(currentScrollY)
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  const { isDark } = useDashboardTheme()
 
   return (
-    <>
-        <header className={`sticky hidden md:block top-0 w-full z-50 bg-white shadow-sm transition-transform duration-300 ${
-          isVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}>
-            <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
-            <div className="hidden md:flex lg:flex lg:flex-1">
-                <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5">
-                <img
-                    alt=""
-                  src={logoUta}
-                    className="h-22 w-auto"
-                />
-                </a>
-            </div>
-            <div className="hidden md:flex md:gap-x-0 lg:flex lg:gap-x-12">
-                {headerNavigation.map((item) => (
-                    <ItemHeader key={item.id} item={item} />
-                ))}
-            </div>
-            
-            {/* Logo CTT - Solo en desktop */}
-            <div className="lg:flex lg:flex-1 lg:justify-end">
-                <a href="https://uta.edu.ec/ctt-fisei/" className="-m-1.5 p-1.5">
-                    <img
-                        alt="CTT Logo"
-                    src={logoCtt}
-                        className="h-22 w-auto"
-                    />
-                </a>
-            </div>
-            <div className=" flex flex-1 lg:hidden md:hidden pl-10">
-                <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5">
-                <img
-                    alt="UTA Logo"
-                  src={logoUtaPequeno}
-                    className="h-15 w-auto min-w-30"
-                />
-                </a>
-            </div>
-            </nav>
-        </header>
-    </>
+    <header className="relative hidden md:block w-full bg-white dark:bg-[#121215] border-b border-black/[0.06] dark:border-white/[0.08] shadow-2xs transition-colors duration-200 z-30">
+      <nav aria-label="Global" className="flex items-center justify-between p-4 lg:px-8">
+        <div className="hidden md:flex lg:flex lg:flex-1 items-center">
+          <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5 flex items-center" target="_blank" rel="noreferrer">
+            <img
+              alt="UTA Logo"
+              src={isDark ? logoUtaWhite : logoUta}
+              className="h-16 lg:h-20 w-auto object-contain transition-opacity duration-200"
+            />
+          </a>
+        </div>
+        <div className="hidden md:flex md:gap-x-4 lg:flex lg:gap-x-12">
+          {headerNavigation.map((item) => (
+            <ItemHeader key={item.id} item={item} />
+          ))}
+        </div>
+        
+        {/* Logo CTT - Solo en desktop */}
+        <div className="lg:flex lg:flex-1 lg:justify-end items-center">
+          <a href="https://uta.edu.ec/ctt-fisei/" className="-m-1.5 p-1.5 flex items-center" target="_blank" rel="noreferrer">
+            <img
+              alt="CTT Logo"
+              src={logoCtt}
+              className="h-16 lg:h-20 w-auto object-contain p-1 rounded-lg bg-white/95 dark:bg-white/90 shadow-2xs"
+            />
+          </a>
+        </div>
+        <div className="flex flex-1 lg:hidden md:hidden pl-10 items-center">
+          <a href="https://uta.edu.ec/" className="-m-1.5 p-1.5 flex items-center" target="_blank" rel="noreferrer">
+            <img
+              alt="UTA Logo"
+              src={isDark ? logoUtaWhite : logoUtaPequeno}
+              className="h-12 w-auto object-contain"
+            />
+          </a>
+        </div>
+      </nav>
+    </header>
   )
 }

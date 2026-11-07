@@ -4,8 +4,6 @@ import { EyeIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import { Table } from "../../components/ui";
 import { useDashboardTheme } from "../../context/DashboardThemeContext";
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 const headers = ["titulo", "categoria", "fecha_inscripcion", "estado", "detalles"];
 
@@ -128,18 +126,33 @@ export default function CursosInscritos() {
         courseImage: enrollment.course_image,
         detalles: (
           <div className="flex items-center justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => navigate(`/dashboard/curso/${enrollment.id_course}`)}
-              className={`h-8 px-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center border ${
-                isDark
-                  ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white border-white/10'
-                  : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 border-zinc-200'
-              }`}
-              title="Ver detalles del curso"
-            >
-              <EyeIcon className="h-4 w-4" />
-            </button>
+            {enrollment.id_course ? (
+              <button
+                type="button"
+                onClick={() => navigate(`/dashboard/curso/${enrollment.id_course}`)}
+                className={`h-8 px-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center border ${
+                  isDark
+                    ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white border-white/10'
+                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 border-zinc-200'
+                }`}
+                title="Ver detalles del curso"
+              >
+                <EyeIcon className="h-4 w-4" />
+              </button>
+            ) : enrollment.id_congress ? (
+              <button
+                type="button"
+                onClick={() => navigate(`/dashboard/congreso/${enrollment.id_congress}`)}
+                className={`h-8 px-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center border ${
+                  isDark
+                    ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white border-white/10'
+                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 border-zinc-200'
+                }`}
+                title="Ver detalles del congreso"
+              >
+                <EyeIcon className="h-4 w-4" />
+              </button>
+            ) : null}
             <label
               htmlFor={`file_input_${enrollment.id}`}
               className="h-8 px-3 bg-[#00345e] hover:bg-[#002747] text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center justify-center whitespace-nowrap shadow-xs"
@@ -162,8 +175,6 @@ export default function CursosInscritos() {
   }, [rawEnrollments, isDark, navigate, handleUploadReceipt]);
 
   useEffect(() => {
-    AOS.init({ duration: 1000, once: false, mirror: true });
-    AOS.refresh();
     loadEnrollments(statusFilter);
   }, [loadEnrollments, statusFilter]);
 

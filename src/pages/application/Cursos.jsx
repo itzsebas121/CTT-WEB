@@ -202,7 +202,7 @@ export default function Cursos() {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" title="Curso Disponible"></span>
                 <button
                   type="button"
-                  onClick={() => navigate(`/dashboard/curso/${course.id}`)}
+                  onClick={() => course?.id && navigate(`/dashboard/curso/${course.id}`)}
                   className={`font-semibold transition-colors text-left text-xs sm:text-sm leading-snug cursor-pointer border-0 bg-transparent p-0 truncate ${
                     isDark ? 'text-zinc-100 hover:text-blue-400' : 'text-zinc-900 hover:text-[#00345e]'
                   }`}
@@ -250,7 +250,7 @@ export default function Cursos() {
           <div className="flex items-center justify-end gap-2 whitespace-nowrap">
             <button
               type="button"
-              onClick={() => navigate(`/dashboard/curso/${course.id}`)}
+              onClick={() => course?.id && navigate(`/dashboard/curso/${course.id}`)}
               className={`h-8 px-3 text-xs font-medium rounded-lg transition-colors cursor-pointer border ${
                 isDark
                   ? 'text-zinc-200 bg-zinc-800 hover:bg-zinc-700 hover:text-white border-white/10'
@@ -767,7 +767,7 @@ export default function Cursos() {
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => navigate(`/dashboard/curso/${course.id}`)}
+                          onClick={() => course?.id && navigate(`/dashboard/curso/${course.id}`)}
                           className={`h-8 px-3 text-xs font-medium rounded-lg transition-colors cursor-pointer border ${
                             isDark
                               ? 'text-zinc-300 bg-zinc-800 hover:bg-zinc-700 hover:text-white border-white/10'

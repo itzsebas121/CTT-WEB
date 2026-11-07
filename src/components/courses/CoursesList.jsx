@@ -1,29 +1,32 @@
 import CardCourse from "./CardCourse"
-import { useEffect, useState, useRef, useCallback } from "react"
-import AOS from "aos"
-import 'aos/dist/aos.css'
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { getCourses, getCoursesByCategory, searchCourses } from "../../api/courses"
 import { resolveImageUrl } from "../../utils/helpers"
+import { gsap, useGSAP, prefersReducedMotion } from "../../utils/gsapConfig"
 
 export default function CoursesList({filters}) {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [totalCourses, setTotalCourses] = useState(0);
     const observer = useRef();
-
-    useEffect(() => {
-        AOS.init({ duration: 1000, once: false, mirror: true });
-        AOS.refresh();
-    }, []);
+    const gridContainerRef = useRef(null);
+    const isFetchingRef = useRef(false);
+    const prevCoursesCountRef = useRef(0);
 
     // Cargar cursos desde la API con paginación
     const loadCourses = async (category = null, searchQuery = null, pageNum = 1, append = false) => {
+        if (isFetchingRef.current) return;
+        isFetchingRef.current = true;
+
         try {
             if (pageNum === 1) {
                 setLoading(true);
+            } else {
+                setLoadingMore(true);
             }
             setError(null);
 
@@ -39,8 +42,10 @@ export default function CoursesList({filters}) {
                 data = await getCourses(pageNum, pageSize, 'activo');
             }
 
+            const incomingCourses = data.courses || [];
+
             // Transformar los datos
-            const transformedCourses = data.courses.map(course => ({
+            const transformedCourses = incomingCourses.map(course => ({
                 title: course.title,
                 image: resolveImageUrl(course.course_image_detail),
                 isOpen: course.status === 'activo',
@@ -57,27 +62,31 @@ export default function CoursesList({filters}) {
             }
 
             setTotalCourses(data.total || 0);
-            setHasMore(data.courses.length === pageSize && (data.page * pageSize) < data.total);
+            setHasMore(transformedCourses.length === pageSize && (pageNum * pageSize) < (data.total || 0));
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Error al cargar los cursos');
         } finally {
             setLoading(false);
+            setLoadingMore(false);
+            isFetchingRef.current = false;
         }
     };
 
-    // Observer para el último elemento
+    // Observer para el último elemento con control estricto de carga
     const lastCourseElementRef = useCallback(node => {
-        if (loading) return;
+        if (loading || loadingMore || isFetchingRef.current || !hasMore) return;
         if (observer.current) observer.current.disconnect();
         
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && hasMore) {
+            if (entries[0].isIntersecting && hasMore && !isFetchingRef.current) {
                 setPage(prevPage => prevPage + 1);
             }
+        }, {
+            rootMargin: '120px',
         });
         
         if (node) observer.current.observe(node);
-    }, [loading, hasMore]);
+    }, [loading, loadingMore, hasMore]);
 
     // Cargar más cursos cuando cambia la página
     useEffect(() => {
@@ -91,6 +100,7 @@ export default function CoursesList({filters}) {
         setPage(1);
         setCourses([]);
         setHasMore(true);
+        prevCoursesCountRef.current = 0;
         loadCourses(filters.category, filters.search, 1, false);
     }, [filters.category, filters.search]);
 
@@ -142,11 +152,51 @@ export default function CoursesList({filters}) {
     };
 
     // Filtrar cursos
-    const filteredCourses = courses.filter(matchesFilters);
+    const filteredCourses = useMemo(() => {
+        return courses.filter(matchesFilters);
+    }, [courses, filters]);
+
+    useGSAP(
+        () => {
+            if (prefersReducedMotion() || filteredCourses.length === 0) return;
+
+            if (page === 1) {
+                // En la primera página o al filtrar, animar únicamente el primer lote
+                gsap.from(".catalog-card-item", {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.4,
+                    stagger: 0.04,
+                    ease: "power2.out",
+                    clearProps: "all",
+                });
+            } else if (filteredCourses.length > prevCoursesCountRef.current) {
+                // Al scrollear para cargar más, animar ÚNICAMENTE las tarjetas nuevas
+                // para que las tarjetas anteriores NUNCA se vuelvan invisibles ni parpadeen
+                const startIndex = prevCoursesCountRef.current + 1;
+                const newCards = gridContainerRef.current?.querySelectorAll(
+                    `.catalog-card-item:nth-child(n+${startIndex})`
+                );
+                if (newCards && newCards.length > 0) {
+                    gsap.from(newCards, {
+                        opacity: 0,
+                        y: 15,
+                        duration: 0.35,
+                        stagger: 0.03,
+                        ease: "power2.out",
+                        clearProps: "all",
+                    });
+                }
+            }
+
+            prevCoursesCountRef.current = filteredCourses.length;
+        },
+        { dependencies: [filteredCourses.length, page], scope: gridContainerRef }
+    );
 
     return (
-        <div className="overflow-hidden bg-white mx-auto max-w-7xl md:px-6 lg:px-8 pt-8" data-aos="fade-down">
-            <h2 className="text-2xl font-semibold text-primary ml-6">
+        <div ref={gridContainerRef} className="overflow-hidden bg-white dark:bg-[#121215] mx-auto max-w-7xl md:px-6 lg:px-8 pt-8 transition-colors">
+            <h2 className="text-2xl font-bold text-primary dark:text-zinc-100 ml-6">
                 Cursos {totalCourses > 0 && `(${totalCourses})`}
             </h2>
 
@@ -206,9 +256,8 @@ export default function CoursesList({filters}) {
                                 const isLastElement = index === filteredCourses.length - 1;
                                 return (
                                     <div 
-                                        data-aos="zoom-in" 
                                         key={course.id || index} 
-                                        className="inline-block w-full px-6"
+                                        className="catalog-card-item inline-block w-full px-6 will-change-transform"
                                         ref={isLastElement ? lastCourseElementRef : null}
                                     >
                                         <CardCourse
@@ -222,10 +271,10 @@ export default function CoursesList({filters}) {
                                 );
                             })}
                         </div>
-                        {loading && page > 1 && (
+                        {loadingMore && (
                             <div className="flex justify-center items-center mt-6 mb-6">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                                <span className="ml-3 text-primary">Cargando más cursos...</span>
+                                <span className="ml-3 text-primary dark:text-blue-400 font-medium text-xs">Cargando más cursos...</span>
                             </div>
                         )}
                         {!hasMore && filteredCourses.length > 0 && (

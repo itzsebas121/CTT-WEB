@@ -1,10 +1,12 @@
 import './App.css'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Header, Nav, Footer } from './components/layout'
+import ScrollToTop from './components/layout/ScrollToTop'
 import Home from './pages/Home'
 import Courses from './pages/Courses'
 import Events from './pages/Events'
 import CourseDetail from './pages/CourseDetail'
+import CongressDetail from './pages/CongressDetail'
 import Nosotros from './pages/Nosotros'
 import Contact from './pages/Contact'
 import Login from './pages/auth/Login'
@@ -31,6 +33,7 @@ function App() {
 
   return (
       <div className={`min-h-screen flex flex-col transition-colors duration-200 ${isDark ? 'bg-[#121215] text-zinc-100' : 'bg-white text-zinc-900'}`}>
+        <ScrollToTop />
         {!isLogin && <Header />}
         {!isLogin && <Nav />}
 
@@ -42,24 +45,25 @@ function App() {
             <Route path="/courses" element={<Courses />} />
             <Route path="/events" element={<Events />} />
             <Route path="/course/:id" element={<CourseDetail />} />
+            <Route path="/congreso/:id" element={<CongressDetail />} />
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/contact" element={<Contact />} />
 
             {/* Rutas privadas dentro del dashboard */}
             <Route
-              path="/dashboard/*"
+              path="/dashboard"
               element={
                 <PrivateRoute>
                   <Dashboard/>
                 </PrivateRoute>
               }
-              
             >
               <Route index element={<Navigate to="cursos/disponibles" replace />} />  
               <Route path="cursos/disponibles" element={<Cursos />} />
               <Route path="cursos/inscrito" element={<CursosInscritos />} />
               <Route path="curso/:id" element={<CourseDetail />} />
-              {/* Otras rutas privadas pueden ir aquí */}
+              <Route path="congreso/:id" element={<CongressDetail />} />
+              <Route path="*" element={<Navigate to="cursos/disponibles" replace />} />
             </Route>
 
             <Route path="*" element={<Home />} />

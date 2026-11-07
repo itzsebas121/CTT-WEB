@@ -30,19 +30,29 @@ export default function LoginLocal() {
 
       const pendingEnrollment = localStorage.getItem('pendingEnrollment')
       if (pendingEnrollment) {
-        const { courseId, returnPath } = JSON.parse(pendingEnrollment)
-        let targetPath = returnPath
-        if (returnPath.startsWith('/course/')) {
-          targetPath = returnPath.replace('/course/', '/dashboard/curso/')
+        try {
+          const { courseId, returnPath } = JSON.parse(pendingEnrollment)
+          const parsedId = parseInt(courseId, 10)
+          if (parsedId && !isNaN(parsedId) && returnPath && !returnPath.includes('/null')) {
+            let targetPath = returnPath
+            if (returnPath.startsWith('/course/')) {
+              targetPath = returnPath.replace('/course/', '/dashboard/curso/')
+            }
+            navigate(targetPath, {
+              state: { enrollCourseId: parsedId },
+              replace: true
+            })
+            return
+          } else {
+            localStorage.removeItem('pendingEnrollment')
+          }
+        } catch {
+          localStorage.removeItem('pendingEnrollment')
         }
-        navigate(targetPath, {
-          state: { enrollCourseId: parseInt(courseId) },
-          replace: true
-        })
-      } else {
-        const from = location.state?.from?.pathname || '/dashboard'
-        navigate(from, { replace: true })
       }
+
+      const from = location.state?.from?.pathname || '/dashboard'
+      navigate(from, { replace: true })
     } catch (error) {
       setErrorMessage(error.message || 'Error al iniciar sesión')
     } finally {

@@ -1,91 +1,87 @@
-import { useEffect, useState, useRef } from 'react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import { useRef } from "react";
+import { gsap, useGSAP, prefersReducedMotion } from "../../utils/gsapConfig";
 
 const stats = [
-  { id: 1, name: 'Estudiantes', value: '2,000' },
-  { id: 2, name: 'Cursos activos', value: '40' },
-  { id: 3, name: 'Cursos concluidos', value: '80' },
-]
-
-// Hook personalizado para animar el contador
-function useAnimatedCounter(endValue, duration = 2000) {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const elementRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [isVisible]);
-
-  useEffect(() => {
-    if (!isVisible) return;
-
-    const startValue = 0;
-    const startTime = Date.now();
-    const numericValue = parseInt(endValue.replace(/,/g, ''), 10);
-
-    const animate = () => {
-      const currentTime = Date.now();
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      // Easing function para una animación más suave
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const currentValue = Math.floor(startValue + (numericValue - startValue) * easeOut);
-
-      // Formatear el número con comas
-      const formattedValue = currentValue.toLocaleString('es-ES');
-      setCount(formattedValue);
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        setCount(endValue); // Asegurar que termine en el valor exacto
-      }
-    };
-
-    animate();
-  }, [isVisible, endValue, duration]);
-
-  return [count, elementRef];
-}
+  { id: 1, name: "Estudiantes capacitados", value: 2000, suffix: "+" },
+  { id: 2, name: "Cursos y programas activos", value: 40, suffix: "" },
+  { id: 3, name: "Talleres y eventos concluidos", value: 80, suffix: "+" },
+];
 
 export default function Stats() {
-  useEffect(() => {
-    AOS.init({ duration: 1000, once: false, mirror: true });
-    AOS.refresh();
-  }, []);
+  const containerRef = useRef(null);
+  const numberRefs = useRef([]);
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return;
+
+      // Animación de entrada de las tarjetas estadísticas con ScrollTrigger
+      gsap.from(".stat-card", {
+        opacity: 0,
+        y: 35,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power3.out",
+        clearProps: "all",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 82%",
+          once: true,
+        },
+      });
+
+      // Animación fluida de contadores numéricos con ScrollTrigger
+      stats.forEach((stat, idx) => {
+        const el = numberRefs.current[idx];
+        if (!el) return;
+
+        const countObj = { val: 0 };
+        gsap.to(countObj, {
+          val: stat.value,
+          duration: 1.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 82%",
+            once: true,
+          },
+          onUpdate: () => {
+            if (el) {
+              const currentInt = Math.floor(countObj.val);
+              el.innerText = `${currentInt.toLocaleString("es-ES")}${stat.suffix}`;
+            }
+          },
+        });
+      });
+    },
+    { scope: containerRef }
+  );
+
   return (
-     <div className="bg-[#F5F5F5] py-12 sm:py-14" data-aos="fade-down">
+    <div
+      ref={containerRef}
+      className="bg-[#F5F5F5] dark:bg-[#16161a] border-y border-black/[0.04] dark:border-white/[0.06] py-14 sm:py-16 transition-colors"
+    >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
-          {stats.map((stat) => {
-            const [animatedValue, elementRef] = useAnimatedCounter(stat.value);
-            return (
-              <div key={stat.id} className="mx-auto flex max-w-xs flex-col gap-y-4" ref={elementRef}>
-                <dt className="text-base/7 text-primary">{stat.name}</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-primary sm:text-5xl">
-                  {animatedValue}
-                </dd>
-              </div>
-            );
-          })}
+        <dl className="grid grid-cols-1 gap-x-8 gap-y-12 text-center lg:grid-cols-3">
+          {stats.map((stat, idx) => (
+            <div
+              key={stat.id}
+              className="stat-card mx-auto flex max-w-xs flex-col gap-y-3.5 will-change-transform"
+            >
+              <dt className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-medium tracking-tight">
+                {stat.name}
+              </dt>
+              <dd
+                ref={(el) => (numberRefs.current[idx] = el)}
+                className="order-first text-4xl sm:text-5xl font-extrabold tracking-tight text-[#00345e] dark:text-white"
+              >
+                0{stat.suffix}
+              </dd>
+            </div>
+          ))}
         </dl>
       </div>
     </div>
-  )
+  );
 }

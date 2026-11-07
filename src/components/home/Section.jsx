@@ -1,53 +1,84 @@
-import * as Icons from '@heroicons/react/24/outline'
+import { useRef } from 'react';
+import * as Icons from '@heroicons/react/24/outline';
+import { gsap, useGSAP, prefersReducedMotion } from '../../utils/gsapConfig';
+import fiseiFallback from '../../assets/fisei.jpg';
 
-export default function Section({item}) {
+export default function Section({ item }) {
+  const containerRef = useRef(null);
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion() || !containerRef.current) return;
+
+      gsap.from('.section-fade-in', {
+        opacity: 0,
+        y: 30,
+        duration: 0.7,
+        stagger: 0.15,
+        ease: 'power2.out',
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 80%',
+          once: true,
+        },
+      });
+    },
+    { scope: containerRef }
+  );
+
   return (
-    <div className="overflow-hidden bg-white py-24 sm:py-32">
+    <div
+      ref={containerRef}
+      className="overflow-hidden bg-white dark:bg-[#121215] py-16 sm:py-24 transition-colors"
+    >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-          <div className="lg:pt-4 lg:pr-8">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-12 gap-y-12 lg:mx-0 lg:max-w-none lg:grid-cols-2 items-center">
+          <div className="section-fade-in lg:pt-4">
             <div className="lg:max-w-lg">
-              <h2 className="text-2xl font-semibold text-primary">{item.title}</h2>
-              <p className="mt-2 text-3xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
-                {item.subtitle}
-              </p>
-              { item.description && (
-                <p className="mt-6 text-lg/8 text-gray-700">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+                {item.subtitle || item.title}
+              </h2>
+              {item.description && (
+                <p className="mt-4 text-base sm:text-lg leading-relaxed text-gray-700 dark:text-zinc-300">
                   {item.description}
                 </p>
-              ) }
-              { item.list && (
-                <dl className="mt-10 max-w-xl space-y-8 text-base/7 lg:max-w-none">
-                  {item.list.map((item, index) => {
-                      const  Icono = Icons[item.icon];
-                        return (
-                          <div key={index} className="relative pl-9">
-                            <dt className="inline font-semibol text-primary">
-                              <Icono aria-hidden="true" className="absolute top-1 left-1 size-5" />
-                              {item.title}
-                            </dt>
-                            <dd className="inline text-gray-700">{item.description}</dd>
-                          </div>
-                        )
+              )}
+              {item.list && (
+                <dl className="mt-8 space-y-6 text-sm sm:text-base">
+                  {item.list.map((listItem, index) => {
+                    const Icono = Icons[listItem.icon] || Icons.AcademicCapIcon;
+                    return (
+                      <div key={index} className="relative pl-8">
+                        <dt className="inline font-bold text-[#00345e] dark:text-blue-400">
+                          <Icono
+                            aria-hidden="true"
+                            className="absolute top-0.5 left-0 size-5 text-[#00345e] dark:text-blue-400"
+                          />
+                          {listItem.title}
+                        </dt>
+                        <dd className="inline text-gray-700 dark:text-zinc-300 ml-1">
+                          {listItem.description}
+                        </dd>
+                      </div>
+                    );
                   })}
                 </dl>
               )}
-              { item.buttonText && (
-                <button className="rojo mt-6">
-                  Más información...
-                </button>
-              )}
             </div>
           </div>
-          <img
-            alt="Product screenshot"
-            src={item.image}
-            width={2432}
-            height={1442}
-            className="w-3xl max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-228 md:-ml-4 lg:-ml-0"
-          />
+          <div className="section-fade-in flex justify-center">
+            <img
+              alt="Instalaciones CTT UTA"
+              src={item.image || fiseiFallback}
+              onError={(e) => {
+                e.currentTarget.src = fiseiFallback;
+              }}
+              className="w-full max-w-lg lg:max-w-none h-auto max-h-[500px] object-cover rounded-2xl shadow-xl ring-1 ring-black/[0.08] dark:ring-white/[0.1]"
+            />
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

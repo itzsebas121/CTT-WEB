@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Stats, Carousel, BannerImage } from '../components/home';
 import { CourseSection } from '../components/courses';
 import { heroSlides, aboutSlides, projectsSlides } from '../constants/slides';
@@ -8,8 +8,11 @@ import {
   transformAboutSlides, 
   transformProjectsSlides 
 } from '../api/banners';
+import { useDashboardTheme } from '../context/DashboardThemeContext';
+import { ScrollTrigger } from '../utils/gsapConfig';
 
 export default function Home() {
+  const { isDark } = useDashboardTheme();
   const [heroData, setHeroData] = useState(heroSlides);
   const [aboutData, setAboutData] = useState(aboutSlides);
   const [projectsData, setProjectsData] = useState(projectsSlides);
@@ -44,12 +47,15 @@ export default function Home() {
         }
       } catch (error) {
         console.error('Error al cargar los banners:', error);
-        // Si hay error, se mantienen los datos por defecto de slides.js
         setHeroData(heroSlides);
         setAboutData(aboutSlides);
         setProjectsData(projectsSlides);
       } finally {
         setIsLoading(false);
+        // Recalcular posiciones de ScrollTrigger una vez los banners se cargaron
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 100);
       }
     };
 
@@ -59,18 +65,35 @@ export default function Home() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Cargando...</div>
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#00345e] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div>
-      <Carousel slides={heroData} height='calc(100vh - 198px)' buttons colorText={'#FFFFFF'} />
-      <CourseSection/>
-      <BannerImage slides={aboutData} />
-      <Stats/>
-      <Carousel slides={projectsData} marginBottom={65} colorText={'var(--color-primary)'} background={'white'}/>
+    <div className={`transition-colors duration-200 ${isDark ? 'bg-[#121215] text-zinc-100' : 'bg-white text-zinc-900'}`}>
+      <section className="relative z-10">
+        <Carousel slides={heroData} height="calc(100vh - 198px)" buttons colorText="#FFFFFF" />
+      </section>
+
+      <section className="relative z-20">
+        <CourseSection />
+      </section>
+
+      <section className="relative z-10">
+        <BannerImage slides={aboutData} />
+      </section>
+
+      <section className="relative z-20">
+        <Stats />
+      </section>
+
+      <section className="relative z-10 pb-16">
+        <Carousel
+          slides={projectsData}
+          background={isDark ? '#16161a' : '#ffffff'}
+        />
+      </section>
     </div>
   );
 }

@@ -7,10 +7,12 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { getCategoriesEnabled } from "../../api/categories";
+import { useDashboardTheme } from "../../context/DashboardThemeContext";
 
 export default function FilterSidebar({ filters, setFilters }) {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const { isDark } = useDashboardTheme();
 
   // Previene scroll de fondo cuando el drawer está abierto
   useEffect(() => {
@@ -65,11 +67,11 @@ export default function FilterSidebar({ filters, setFilters }) {
 
   const FiltersContent = (
     <div className="min-h-0"> {/* min-h-0 evita que el contenido estire contenedores padres */}
-      <h2 className="text-xl font-semibold text-primary mb-6">Filtros</h2>
+      <h2 className="text-xl font-bold text-primary dark:text-zinc-100 mb-6">Filtros</h2>
 
       {/* Buscar */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
           Buscar por nombre
         </label>
         <input
@@ -77,7 +79,7 @@ export default function FilterSidebar({ filters, setFilters }) {
           value={filters.search}
           onChange={(e) => handleChange("search", e.target.value)}
           placeholder="Ej: Arduino"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary placeholder-gray-400 dark:placeholder-zinc-500 transition-colors"
         />
       </div>
 
@@ -277,16 +279,16 @@ export default function FilterSidebar({ filters, setFilters }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="lg:hidden fixed bottom-6 right-4 z-40 flex items-center gap-2 bg-white shadow-lg px-4 py-3 rounded-full border"
+        className="lg:hidden fixed bottom-6 right-4 z-40 flex items-center gap-2 bg-primary text-white shadow-lg px-4 py-3 rounded-full border border-primary/20 cursor-pointer"
         aria-label="Abrir filtros"
         type="button"
       >
         <FunnelIcon className="h-5 w-5 text-white" />
-        <span className="text-sm font-medium text-white">Filtros</span>
+        <span className="text-sm font-semibold text-white">Filtros</span>
       </button>
 
       {/* Sidebar para desktop */}
-      <aside className="hidden lg:block w-72 bg-white border-r border-gray-200 p-6 sticky top-50 h-[calc(100vh-1.5rem)] overflow-y-auto">
+      <aside className="hidden lg:block w-72 bg-white dark:bg-[#16161a] border border-gray-200 dark:border-white/[0.08] p-6 sticky top-28 h-[calc(100vh-8rem)] overflow-y-auto rounded-2xl shadow-xs transition-colors">
         {FiltersContent}
       </aside>
 
@@ -295,15 +297,15 @@ export default function FilterSidebar({ filters, setFilters }) {
         <div className="fixed inset-0 z-50 flex">
           {/* overlay */}
           <div
-            className="absolute inset-0 bg-opacity-40"
+            className="absolute inset-0 bg-black/50 backdrop-blur-xs"
             onClick={() => setOpen(false)}
             aria-hidden
           />
           {/* panel */}
-          <div className="relative w-80 max-w-full h-full bg-white p-6 shadow-xl overflow-y-auto">
+          <div className="relative w-80 max-w-full h-full bg-white dark:bg-[#16161a] border-l border-gray-200 dark:border-white/[0.08] p-6 shadow-xl overflow-y-auto">
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 text-gray-600"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white"
               aria-label="Cerrar filtros"
               type="button"
             >
