@@ -94,12 +94,18 @@
   line-height: 1.5;
   font-weight: 400;
 
-  background-color: var(--color-dark);
+  background-color: #ffffff;
+  color: #111827;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html.dark, html.dark body {
+  background-color: #121215;
+  color: #f4f4f5;
 }
 
 a {

@@ -14,10 +14,12 @@ import Cursos from './pages/application/Cursos'
 import CursosInscritos from './pages/application/CursosInscritos'
 import { useSessionExpiration } from './hooks/useSessionExpiration'
 import { isAuthenticated } from './utils/auth'
+import { useDashboardTheme } from './context/DashboardThemeContext'
 
 function App() {
   const location = useLocation()
   const isLogin = location.pathname === '/login' || location.pathname === '/register' || location.pathname.startsWith('/dashboard')
+  const { isDark } = useDashboardTheme();
 
   // Activar el control de expiración de sesión
   useSessionExpiration();
@@ -28,42 +30,44 @@ function App() {
   };
 
   return (
-      <>
+      <div className={`min-h-screen flex flex-col transition-colors duration-200 ${isDark ? 'bg-[#121215] text-zinc-100' : 'bg-white text-zinc-900'}`}>
         {!isLogin && <Header />}
         {!isLogin && <Nav />}
 
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/course/:id" element={<CourseDetail />} />
-          <Route path="/nosotros" element={<Nosotros />} />
-          <Route path="/contact" element={<Contact />} />
+        <div className="flex-1 flex flex-col">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/course/:id" element={<CourseDetail />} />
+            <Route path="/nosotros" element={<Nosotros />} />
+            <Route path="/contact" element={<Contact />} />
 
-          {/* Rutas privadas dentro del dashboard */}
-          <Route
-            path="/dashboard/*"
-            element={
-              <PrivateRoute>
-                <Dashboard/>
-              </PrivateRoute>
-            }
-            
-          >
-            <Route index element={<Navigate to="cursos/disponibles" replace />} />  
-            <Route path="cursos/disponibles" element={<Cursos />} />
-            <Route path="cursos/inscrito" element={<CursosInscritos />} />
-            <Route path="curso/:id" element={<CourseDetail />} />
-            {/* Otras rutas privadas pueden ir aquí */}
-          </Route>
+            {/* Rutas privadas dentro del dashboard */}
+            <Route
+              path="/dashboard/*"
+              element={
+                <PrivateRoute>
+                  <Dashboard/>
+                </PrivateRoute>
+              }
+              
+            >
+              <Route index element={<Navigate to="cursos/disponibles" replace />} />  
+              <Route path="cursos/disponibles" element={<Cursos />} />
+              <Route path="cursos/inscrito" element={<CursosInscritos />} />
+              <Route path="curso/:id" element={<CourseDetail />} />
+              {/* Otras rutas privadas pueden ir aquí */}
+            </Route>
 
-          <Route path="*" element={<Home />} />
-        </Routes>
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </div>
 
         {!isLogin && <Footer />}
-      </>
+      </div>
   )
 }
 
