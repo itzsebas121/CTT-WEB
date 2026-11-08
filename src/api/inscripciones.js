@@ -54,6 +54,57 @@ export const enrollInCourse = async (userId, courseId) => {
   }
 };
 
+export const enrollInCongress = async (userId, congressId) => {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    throw new Error('No se encontró token de autenticación');
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/enrollments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        id_user_platform: userId,
+        id_congress: parseInt(congressId, 10),
+        status: 'Interesado',
+        payment_order_url: 'local'
+      })
+    });
+
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      throw new Error('UNAUTHORIZED');
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.detail && errorData.detail.includes('already enrolled')) {
+        throw new Error('Ya estás inscrito en este congreso');
+      }
+      throw new Error(errorData.detail || 'Error al inscribirse en el congreso');
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error.message === 'UNAUTHORIZED') {
+      throw error;
+    }
+    if (error.message.includes('Ya estás inscrito')) {
+      throw error;
+    }
+    if (error instanceof TypeError || error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('No hay conexión a internet. Por favor, verifica tu conexión e intenta nuevamente.');
+    }
+    throw error;
+  }
+};
+
 export const getUserEnrollments = async (userId, enrollmentStatus = null) => {
   const token = localStorage.getItem('token');
   

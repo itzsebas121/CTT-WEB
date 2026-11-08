@@ -7,6 +7,7 @@ import logoUTASidebarWhite from '../../assets/logoUTA-sidebar-white.png';
 import { useDashboardTheme } from '../../context/DashboardThemeContext';
 import {
   BookOpenIcon,
+  AcademicCapIcon,
   CheckCircleIcon,
   ClockIcon,
   DocumentCheckIcon,
@@ -65,6 +66,11 @@ export default function Menu({ isCollapsed = false, onToggleCollapse }) {
           name: 'Cursos Inscritos',
           path: '/dashboard/cursos/inscrito',
           icon: CheckCircleIcon
+        },
+        {
+          name: 'Congresos Disponibles',
+          path: '/dashboard/congresos/disponibles',
+          icon: AcademicCapIcon
         }
       ]
     },

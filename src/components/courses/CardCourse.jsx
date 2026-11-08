@@ -53,7 +53,7 @@ export default function CardCourse({
       {/* Contenido flexible */}
       <div className="p-4 flex flex-col flex-1">
         {/* Estado y horas */}
-        <div className="flex items-center justify-between text-gray-600 dark:text-zinc-400 text-xs sm:text-sm">
+        <div className="flex items-center justify-between text-zinc-600 dark:text-zinc-300 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5">
             {isOpen ? (
               <LockOpenIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -69,12 +69,12 @@ export default function CardCourse({
 
           <div className="flex items-center gap-1.5 font-medium text-xs">
             <ClockIcon className="h-4 w-4 text-[#00345e] dark:text-blue-400" />
-            <span>{hours} HORAS</span>
+            <span className="text-zinc-700 dark:text-zinc-200">{hours} HORAS</span>
           </div>
         </div>
 
         <div className="mt-3 flex-1 flex flex-col">
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white leading-snug flex-1 line-clamp-2">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-snug flex-1 line-clamp-2">
             {title}
           </h2>
         </div>

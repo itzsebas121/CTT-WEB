@@ -6,7 +6,8 @@ import { mainNavigation, itemsHeader } from '../../constants/navigation'
 import { isAuthenticated, getUser, clearAuthData } from '../../utils/auth'
 import { ConfirmDialog } from '../ui'
 import { useDashboardTheme } from '../../context/DashboardThemeContext'
-import logoCTT from '../../assets/logoCTT.webp'
+import logoCTTTransparent from '../../assets/logoCTT-transparent.png'
+import logoCTTWhite from '../../assets/logoCTT-white.png'
 import logoUTAPequeno from '../../assets/LogoUTAPequeño.png'
 import logoUTAWhite from '../../assets/logoUTA-sidebar-white.png'
 
@@ -182,8 +183,8 @@ export default function Nav() {
           <a href="/" className="-m-1.5 p-1.5">
             <img
               alt="Logo CTT"
-              src={logoCTT}
-              className="h-14 w-auto object-contain"
+              src={isDark ? logoCTTWhite : logoCTTTransparent}
+              className="h-12 w-auto object-contain"
             />
           </a>
         </div>

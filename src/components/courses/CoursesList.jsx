@@ -226,18 +226,17 @@ export default function CoursesList({filters}) {
 
             {!loading && !error && filteredCourses.length === 0 ? (
                 <div className="flex flex-col justify-center items-center mt-16 mb-12 px-6">
-                    <div className="relative bg-gray-50 rounded-2xl p-8 max-w-md w-full text-center shadow-sm border border-gray-100">
-                        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl opacity-50"></div>
+                    <div className="relative bg-zinc-50 dark:bg-[#16161a] rounded-2xl p-8 max-w-md w-full text-center shadow-xs border border-zinc-200 dark:border-white/10 transition-colors">
                         <div className="relative z-10">
-                            <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
-                                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-zinc-200 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-500 dark:text-zinc-400">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25A8.966 8.966 0 0118 3.75c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-800 mb-2">
+                            <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">
                                 {filters.search ? 'Sin resultados' : (filters.category === 'Todos' || !filters.category ? 'Sin cursos disponibles' : 'Categoría sin cursos')}
                             </h3>
-                            <p className="text-gray-500 text-sm leading-relaxed">
+                            <p className="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed">
                                 {filters.search
                                     ? `No encontramos cursos que coincidan con "${filters.search}".`
                                     : (filters.category === 'Todos' || !filters.category

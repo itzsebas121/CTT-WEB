@@ -51,10 +51,17 @@ function DashboardInner() {
         { name: 'Detalle del Curso', active: true }
       ];
     }
+    if (path.includes('/dashboard/congresos/disponibles')) {
+      return [
+        { name: 'Home', path: '/' },
+        { name: 'Congresos', path: '/dashboard/congresos/disponibles' },
+        { name: 'Disponibles', active: true }
+      ];
+    }
     if (path.includes('/dashboard/congreso/')) {
       return [
         { name: 'Home', path: '/' },
-        { name: 'Cursos', path: '/dashboard/cursos/inscrito' },
+        { name: 'Congresos', path: '/dashboard/congresos/disponibles' },
         { name: 'Detalle del Congreso', active: true }
       ];
     }

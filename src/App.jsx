@@ -14,6 +14,8 @@ import Register from './pages/auth/Register'
 import Dashboard from './pages/application/Dashboard'
 import Cursos from './pages/application/Cursos'
 import CursosInscritos from './pages/application/CursosInscritos'
+import CongresosDisponibles from './pages/application/CongresosDisponibles'
+import Ordenes from './pages/application/Ordenes'
 import { useSessionExpiration } from './hooks/useSessionExpiration'
 import { isAuthenticated } from './utils/auth'
 import { useDashboardTheme } from './context/DashboardThemeContext'
@@ -58,12 +60,15 @@ function App() {
                 </PrivateRoute>
               }
             >
-              <Route index element={<Navigate to="cursos/disponibles" replace />} />  
+              <Route index element={<Navigate to="/dashboard/cursos/disponibles" replace />} />  
               <Route path="cursos/disponibles" element={<Cursos />} />
               <Route path="cursos/inscrito" element={<CursosInscritos />} />
+              <Route path="congresos/disponibles" element={<CongresosDisponibles />} />
+              <Route path="ordenes/pendientes" element={<Ordenes type="pendientes" />} />
+              <Route path="ordenes/completadas" element={<Ordenes type="completadas" />} />
               <Route path="curso/:id" element={<CourseDetail />} />
               <Route path="congreso/:id" element={<CongressDetail />} />
-              <Route path="*" element={<Navigate to="cursos/disponibles" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard/cursos/disponibles" replace />} />
             </Route>
 
             <Route path="*" element={<Home />} />

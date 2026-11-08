@@ -88,23 +88,33 @@ export default function CursosInscritos() {
       });
 
       const apiStatus = enrollment.status || "Interesado";
+      const isCongress = Boolean(enrollment.id_congress);
+      const effectiveTitle = enrollment.course_title || enrollment.congress_title || enrollment.title || (isCongress ? "Congreso Académico" : "Sin título");
+      const effectiveCategory = enrollment.course_category_name || (isCongress ? "Congreso" : "General");
 
       return {
         titulo: (
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+            <span
+              className={`w-2 h-2 rounded-full flex-shrink-0 ${isCongress ? 'bg-indigo-400' : 'bg-emerald-400'}`}
+              title={isCongress ? "Congreso" : "Curso"}
+            />
             <span className={`font-semibold ${isDark ? 'text-zinc-100' : 'text-zinc-900'}`}>
-              {enrollment.course_title || "Sin título"}
+              {effectiveTitle}
             </span>
           </div>
         ),
         categoria: (
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap border ${
             isDark
-              ? 'bg-[#00345e]/40 text-blue-300 border-blue-500/40'
-              : 'bg-[#00345e]/08 text-[#00345e] border-[#00345e]/20'
+              ? isCongress
+                ? 'bg-indigo-950/50 text-indigo-300 border-indigo-500/30'
+                : 'bg-[#00345e]/40 text-blue-300 border-blue-500/40'
+              : isCongress
+                ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                : 'bg-[#00345e]/08 text-[#00345e] border-[#00345e]/20'
           }`}>
-            {enrollment.course_category_name || "Sin categoría"}
+            {effectiveCategory}
           </span>
         ),
         fecha_inscripcion: (
@@ -166,7 +176,7 @@ export default function CursosInscritos() {
               title="Subir comprobante de pago"
               name="file_input"
               id={`file_input_${enrollment.id}`}
-              onChange={(e) => handleUploadReceipt(enrollment.id, enrollment.course_title || "curso", e)}
+              onChange={(e) => handleUploadReceipt(enrollment.id, effectiveTitle, e)}
             />
           </div>
         ),

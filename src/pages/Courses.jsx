@@ -23,7 +23,7 @@ export default function Courses() {
         background={isDark ? '#16161a' : '#ffffff'}
         colorText={isDark ? '#f4f4f5' : 'var(--color-primary)'}
       />
-      <div className="lg:flex container mx-auto p-4 sm:p-5">
+      <div className="lg:flex items-start gap-6 container mx-auto p-4 sm:p-5">
         <FilterSideBar filters={filters} setFilters={setFilters} />
         <div className="lg:flex-1 min-w-0">
           <CoursesList filters={filters} />

@@ -88,9 +88,10 @@ export default function Home() {
         <Stats />
       </section>
 
-      <section className="relative z-10 pb-16">
+      <section className="relative z-10">
         <Carousel
           slides={projectsData}
+          height="560px"
           background={isDark ? '#16161a' : '#ffffff'}
         />
       </section>

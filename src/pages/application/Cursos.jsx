@@ -379,11 +379,11 @@ export default function Cursos() {
           </span>
           <div className="my-2">
             <span className={`text-2xl sm:text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-              {total || rawCourses.length || 27}
+              {total}
             </span>
           </div>
           <span className={`text-xs ${isDark ? 'text-zinc-300' : 'text-zinc-500'}`}>
-            cursos activos para inscripción
+            cursos disponibles para inscripción
           </span>
         </div>
 
@@ -398,7 +398,7 @@ export default function Cursos() {
           </span>
           <div className="my-2">
             <span className={`text-2xl sm:text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-              {categoryOptions.length || 5}
+              {categoryOptions.length}
             </span>
           </div>
           <span className={`text-xs ${isDark ? 'text-zinc-300' : 'text-zinc-500'}`}>

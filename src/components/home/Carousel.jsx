@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { gsap, useGSAP, ScrollTrigger, prefersReducedMotion } from "../../utils/gsapConfig";
+import { gsap, useGSAP, prefersReducedMotion } from "../../utils/gsapConfig";
 import { useDashboardTheme } from "../../context/DashboardThemeContext";
 
 export default function Carousel({
@@ -9,7 +9,6 @@ export default function Carousel({
   buttons = true,
   marginTop,
   marginBottom,
-  colorText,
   background,
 }) {
   const [current, setCurrent] = useState(0);
@@ -23,7 +22,7 @@ export default function Carousel({
     if (!slides || slides.length <= 1) return;
     const interval = setInterval(() => {
       setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    }, 5500);
+    }, 6000);
     return () => clearInterval(interval);
   }, [slides]);
 
@@ -46,6 +45,7 @@ export default function Carousel({
           duration: 0.6,
           stagger: 0.1,
           ease: "power2.out",
+          clearProps: "all",
         }
       );
     },
@@ -55,7 +55,7 @@ export default function Carousel({
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden bg-white dark:bg-[#121215] transition-colors"
+      className="relative w-full overflow-hidden bg-zinc-900 transition-colors"
       style={{ height, marginTop, marginBottom }}
     >
       {slides.map((slide, index) => (
@@ -71,48 +71,60 @@ export default function Carousel({
             alt={slide.title || "Banner slide"}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 flex items-center justify-start bg-black/45">
+          {/* Overlay suave con gradiente para garantizar legibilidad */}
+          <div className={`absolute inset-0 flex items-center justify-start ${
+            hasCard
+              ? "bg-black/50"
+              : "bg-gradient-to-r from-black/80 via-black/50 to-transparent"
+          }`}>
             <div
-              className={`carousel-text-card ml-6 sm:ml-16 max-w-[650px] transition-colors ${
+              className={`carousel-text-card ml-6 sm:ml-16 max-w-[650px] transition-all ${
                 hasCard
                   ? isDark
                     ? "p-6 sm:p-8 rounded-2xl bg-[#16161a]/95 border border-white/10 shadow-2xl backdrop-blur-md text-zinc-100"
                     : "p-6 sm:p-8 rounded-2xl bg-white/95 border border-black/10 shadow-2xl backdrop-blur-md text-zinc-900"
-                  : "p-6 sm:p-10 rounded-2xl bg-black/40 backdrop-blur-xs border border-white/10 text-white"
+                  : "p-6 sm:p-10 rounded-2xl bg-black/45 backdrop-blur-sm border border-white/15 text-white"
               }`}
             >
-              {slide.title && (
-                <h4
-                  className={`text-xs sm:text-sm font-bold tracking-wider uppercase ${
-                    hasCard
-                      ? isDark
-                        ? "text-blue-400"
-                        : "text-[#00345e]"
-                      : "text-blue-200"
-                  }`}
-                >
-                  {slide.title}
-                </h4>
-              )}
+              {/* Título Principal Directo y Limpio (Sin cápsulas ni eyebrows) */}
+              <h2
+                className={`font-extrabold leading-tight tracking-tight ${
+                  hasCard
+                    ? isDark
+                      ? "text-2xl sm:text-3xl text-white"
+                      : "text-2xl sm:text-3xl text-zinc-900"
+                    : "text-2xl sm:text-4xl text-white drop-shadow-xs"
+                }`}
+              >
+                {slide.title}
+              </h2>
+
+              {/* Subtítulo / Descripción descriptiva */}
               {slide.subtitle && (
-                <h2
-                  className={`mt-2 font-extrabold leading-tight ${
+                <p
+                  className={`mt-3 text-xs sm:text-sm md:text-base leading-relaxed ${
                     hasCard
                       ? isDark
-                        ? "text-2xl sm:text-4xl text-white"
-                        : "text-2xl sm:text-4xl text-zinc-900"
-                      : "text-3xl sm:text-5xl text-white"
+                        ? "text-zinc-300"
+                        : "text-zinc-600"
+                      : "text-zinc-200 drop-shadow-xs"
                   }`}
                 >
                   {slide.subtitle}
-                </h2>
+                </p>
               )}
+
               {slide.buttonText && slide.buttonLink && (
-                <Link to={slide.buttonLink} className="inline-block mt-6">
-                  <button className="px-6 py-2.5 rounded-xl font-semibold text-sm text-white bg-[#00345e] hover:bg-[#002747] active:bg-[#001f38] transition-all shadow-md cursor-pointer border border-white/20">
-                    {slide.buttonText}
-                  </button>
-                </Link>
+                <div className="mt-5">
+                  <Link to={slide.buttonLink} className="inline-block">
+                    <button
+                      type="button"
+                      className="px-6 py-2.5 rounded-xl font-semibold text-xs sm:text-sm text-white bg-[#00345e] hover:bg-[#002747] active:bg-[#001f38] transition-all shadow-md cursor-pointer border border-white/20"
+                    >
+                      {slide.buttonText}
+                    </button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -128,8 +140,8 @@ export default function Carousel({
               aria-label={`Slide ${index + 1}`}
               className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer border-0 ${
                 index === current
-                  ? "w-8 bg-[#00345e] dark:bg-white shadow-xs"
-                  : "w-2.5 bg-white/50 hover:bg-white/80"
+                  ? "w-8 bg-white shadow-md"
+                  : "w-2.5 bg-white/40 hover:bg-white/70"
               }`}
             />
           ))}
