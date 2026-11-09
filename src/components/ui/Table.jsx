@@ -195,14 +195,16 @@ export default function Table({
                 isDark ? 'bg-[#121215] border-white/[0.08]' : 'bg-zinc-50/80 border-black/[0.06]'
               }`}>
                 {headers.map((header, idx) => {
-                  const isActions = header.toLowerCase() === 'detalles';
+                  const hLower = header.toLowerCase();
+                  const isActions = hLower === 'detalles' || hLower === 'acciones';
+                  const isTitle = hLower === 'titulo' || hLower === 'programa' || hLower === 'curso';
                   return (
                     <th
                       key={idx}
                       scope="col"
                       className={`py-3 px-4 sm:px-5 text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap ${
                         isDark ? 'text-zinc-400' : 'text-zinc-600'
-                      } ${isActions ? 'text-right' : 'text-left'}`}
+                      } ${isActions ? 'text-right' : 'text-left'} ${isTitle ? 'w-2/5' : ''}`}
                     >
                       {formatHeaderName(header)}
                     </th>
@@ -224,7 +226,8 @@ export default function Table({
                     }`}
                   >
                     {headers.map((header, colIndex) => {
-                      const isActions = header.toLowerCase() === 'detalles';
+                      const hLower = header.toLowerCase();
+                      const isActions = hLower === 'detalles' || hLower === 'acciones';
                       return (
                         <td
                           key={colIndex}

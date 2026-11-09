@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { getCourseById } from "../api/courses";
-import { enrollInCourse, uploadDocumentForEnrollment } from "../api/inscripciones";
+import { enrollInCourse, uploadDocumentForEnrollment, getUserEnrollments } from "../api/inscripciones";
+import { getUser } from "../utils/auth";
 import {
   CourseHeader,
   CourseContent,
@@ -12,7 +13,14 @@ import {
   CourseObjetives,
   CourseMaterials,
 } from "../components/courses";
-import { EnrollmentModal, ConfirmDialog, RoleSelectionModal, PdfUploadModal } from "../components/ui";
+import {
+  EnrollmentModal,
+  ConfirmDialog,
+  RoleSelectionModal,
+  PdfUploadModal,
+  SurveyModal,
+  ReviewsSection,
+} from "../components/ui";
 import { useDashboardTheme } from "../context/DashboardThemeContext";
 
 export default function CourseDetail() {
@@ -35,6 +43,66 @@ export default function CourseDetail() {
   const [isExpositor, setIsExpositor] = useState(false);
   const [documentFile, setDocumentFile] = useState(null);
   const [pendingEnrollment, setPendingEnrollment] = useState(null);
+
+  // Estados de Participante y Panel Oficial
+  const [userEnrollment, setUserEnrollment] = useState(null);
+  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+  const [downloadingRide, setDownloadingRide] = useState(false);
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
+
+  const isPaid = userEnrollment && (
+    (userEnrollment.status || "").toUpperCase() === "PAGADO" ||
+    (userEnrollment.status || "").toUpperCase() === "FACTURADO"
+  );
+
+  const loadUserEnrollment = useCallback(async () => {
+    const user = getUser();
+    if (!user?.id || !id) return;
+    try {
+      const res = await getUserEnrollments(user.id);
+      const list = res?.enrollments || res?.data || [];
+      const found = list.find((e) => String(e.id_course) === String(id));
+      setUserEnrollment(found || null);
+    } catch {
+      // Silencioso
+    }
+  }, [id]);
+
+  useEffect(() => {
+    loadUserEnrollment();
+  }, [loadUserEnrollment]);
+
+  const handleDownloadRide = async () => {
+    if (!userEnrollment?.id) return;
+    try {
+      setDownloadingRide(true);
+      const token = localStorage.getItem("token");
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3002/api/v1";
+      const downloadUrl = `${apiUrl}/enrollments/${userEnrollment.id}/ride/download`;
+
+      const res = await fetch(downloadUrl, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        throw new Error("No se pudo descargar el comprobante RIDE oficial.");
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `RIDE_UTA_CURSO_${userEnrollment.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      alert(err.message || "Error al descargar comprobante RIDE");
+    } finally {
+      setDownloadingRide(false);
+    }
+  };
 
   const isDashboard = location.pathname.startsWith("/dashboard");
 
@@ -155,7 +223,7 @@ export default function CourseDetail() {
     if (location.key !== "default") {
       navigate(-1);
     } else if (isDashboard) {
-      navigate("/dashboard/cursos/disponibles");
+      navigate("/dashboard/oferta?tab=cursos");
     } else {
       navigate("/courses");
     }
@@ -286,6 +354,15 @@ export default function CourseDetail() {
           <CourseContent course={course} />
           <CourseRequirements course={course} />
           <CourseMaterials course={course} />
+          <div className="pt-4">
+            <ReviewsSection
+              type="course"
+              id={id}
+              isEnrolledAndPaid={isPaid}
+              onOpenSurvey={() => setIsSurveyModalOpen(true)}
+              refreshKey={surveyCompleted ? 1 : 0}
+            />
+          </div>
         </div>
 
         {/* Columna Derecha (Sidebar Ficha Técnica & CTA de Inscripción Sticky) */}
@@ -346,6 +423,14 @@ export default function CourseDetail() {
         cancelText="Cancelar"
         type="info"
         loading={enrolling}
+      />
+
+      <SurveyModal
+        isOpen={isSurveyModalOpen}
+        onClose={() => setIsSurveyModalOpen(false)}
+        courseId={id}
+        programTitle={course?.title || course?.titulo}
+        onSuccess={() => setSurveyCompleted(true)}
       />
     </div>
   );

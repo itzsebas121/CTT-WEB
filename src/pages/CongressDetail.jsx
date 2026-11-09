@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeftIcon,
@@ -9,19 +9,25 @@ import {
   AcademicCapIcon,
   BuildingOffice2Icon,
   ExclamationTriangleIcon,
+  ExclamationCircleIcon,
   CheckCircleIcon,
   GlobeAltIcon,
-  SparklesIcon,
   DocumentTextIcon,
   TagIcon,
   ShareIcon,
+  QrCodeIcon,
+  DocumentArrowUpIcon,
+  VideoCameraIcon,
+  StarIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
 import { getCongressById } from "../api/congresses";
 import { getUserEnrollments, enrollInCongress } from "../api/inscripciones";
 import { getUser } from "../utils/auth";
 import { resolveImageUrl } from "../utils/helpers";
 import { useDashboardTheme } from "../context/DashboardThemeContext";
-import EnrollmentModal from "../components/ui/EnrollmentModal";
+import { EnrollmentModal, PaymentReceiptModal, ReviewsSection } from "../components/ui";
+import SurveyModal from "../components/ui/SurveyModal";
 
 export default function CongressDetail() {
   const { id } = useParams();
@@ -39,28 +45,152 @@ export default function CongressDetail() {
 
   const user = getUser();
   const [isEnrolled, setIsEnrolled] = useState(false);
+  const [userEnrollment, setUserEnrollment] = useState(null);
   const [enrolling, setEnrolling] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [enrollmentData, setEnrollmentData] = useState(null);
   const [enrollmentError, setEnrollmentError] = useState(null);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+
+  // Estados para Call for Papers (CFP)
+  const [paperTitle, setPaperTitle] = useState("");
+  const [paperAbstract, setPaperAbstract] = useState("");
+  const [paperTrack, setPaperTrack] = useState("Inteligencia Artificial y Modelos Fundacionales");
+  const [paperKeywords, setPaperKeywords] = useState("");
+  const [paperFileUrl, setPaperFileUrl] = useState("");
+  const [paperSubmitting, setPaperSubmitting] = useState(false);
+  const [paperSuccess, setPaperSuccess] = useState(null);
+  const [paperError, setPaperError] = useState(null);
+  const [downloadingRide, setDownloadingRide] = useState(false);
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
+
+  const handleDownloadRide = async () => {
+    if (!userEnrollment?.id) return;
+    try {
+      setDownloadingRide(true);
+      const token = localStorage.getItem("token");
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3002/api/v1";
+      const downloadUrl = `${apiUrl}/enrollments/${userEnrollment.id}/ride/download`;
+
+      const res = await fetch(downloadUrl, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        throw new Error("No se pudo descargar el comprobante RIDE oficial.");
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `RIDE_UTA_CONGRESO_${userEnrollment.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      alert(err.message || "Error al descargar comprobante RIDE");
+    } finally {
+      setDownloadingRide(false);
+    }
+  };
+
+  const handlePaperSubmit = async (e) => {
+    e.preventDefault();
+    setPaperSubmitting(true);
+    setPaperError(null);
+    setPaperSuccess(null);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem("token");
+
+      const payload = {
+        title: paperTitle.trim(),
+        abstract: paperAbstract.trim(),
+        track: paperTrack,
+        keywords: paperKeywords.trim(),
+        file_url: paperFileUrl.trim(),
+        id_user_platform: user?.id || null,
+      };
+
+      const res = await fetch(`${API_URL}/congresses/${id}/papers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        let msg = "Error al enviar el artículo científico.";
+        try {
+          const data = await res.json();
+          if (data?.detail) msg = data.detail;
+        } catch {}
+        throw new Error(msg);
+      }
+
+      setPaperSuccess("¡Artículo científico enviado con éxito! El comité editorial evaluará su postulación.");
+      setPaperTitle("");
+      setPaperAbstract("");
+      setPaperKeywords("");
+      setPaperFileUrl("");
+    } catch (err) {
+      setPaperError(err.message || "Error al enviar artículo.");
+    } finally {
+      setPaperSubmitting(false);
+    }
+  };
 
   // Verificar inscripción previa si el usuario está autenticado
-  useEffect(() => {
+  const checkEnrollment = async () => {
     if (!user?.id || !id) return;
-    const checkEnrollment = async () => {
-      try {
-        const res = await getUserEnrollments(user.id);
-        const enrollments = res?.enrollments || res?.data || [];
-        const enrolled = enrollments.some(
-          (e) => String(e.id_congress) === String(id)
-        );
-        setIsEnrolled(enrolled);
-      } catch {
-        // En caso de sesión expirada o sin permisos, continuar sin romper la vista
+    try {
+      const res = await getUserEnrollments(user.id);
+      const enrollments = res?.enrollments || res?.data || [];
+      const found = enrollments.find(
+        (e) => String(e.id_congress) === String(id)
+      );
+      if (found) {
+        setIsEnrolled(true);
+        setUserEnrollment(found);
+      } else {
+        setIsEnrolled(false);
+        setUserEnrollment(null);
       }
-    };
+    } catch {
+      // En caso de sesión expirada o sin permisos, continuar sin romper la vista
+    }
+  };
+
+  useEffect(() => {
     checkEnrollment();
   }, [user?.id, id]);
+
+  const isPaidAttendee = useMemo(() => {
+    if (!isEnrolled || !userEnrollment) return false;
+    const st = (userEnrollment.status || "").toUpperCase();
+    return st === "PAGADO" || st === "FACTURADO";
+  }, [isEnrolled, userEnrollment]);
+
+  const cupoMaximo = Number(congress?.cupo_maximo || 250);
+  const inscritos = Number(congress?.inscritos ?? congress?.total_inscritos ?? congress?.total_enrolled ?? 0);
+  const capacityPercentage = cupoMaximo > 0 ? Math.min(Math.round((inscritos / cupoMaximo) * 100), 100) : 0;
+  const isQuotaExceeded = cupoMaximo > 0 && inscritos >= cupoMaximo;
+
+  const isCongressPast = useMemo(() => {
+    if (!congress?.fecha_fin) return false;
+    try {
+      const end = new Date(congress.fecha_fin + "T23:59:59");
+      return end < new Date();
+    } catch {
+      return false;
+    }
+  }, [congress?.fecha_fin]);
 
   // Cargar datos completos del congreso
   useEffect(() => {
@@ -91,7 +221,7 @@ export default function CongressDetail() {
     if (location.key !== "default") {
       navigate(-1);
     } else if (isDashboard) {
-      navigate("/dashboard/congresos/disponibles");
+      navigate("/dashboard/oferta?tab=congresos");
     } else {
       navigate("/events");
     }
@@ -393,6 +523,17 @@ export default function CongressDetail() {
             >
               Auspiciantes ({rawSponsors.length})
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("cfp")}
+              className={`flex-1 min-w-[140px] py-1.5 px-3 rounded-lg text-xs font-semibold transition cursor-pointer text-center whitespace-nowrap ${
+                activeTab === "cfp"
+                  ? "bg-[#00345e] text-white shadow-xs"
+                  : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/[0.04]"
+              }`}
+            >
+              Call for Papers (CFP)
+            </button>
           </div>
 
           {/* CONTENIDO DE PESTAÑAS */}
@@ -652,6 +793,186 @@ export default function CongressDetail() {
               )}
             </div>
           )}
+
+          {/* 5. CALL FOR PAPERS (CFP) */}
+          {activeTab === "cfp" && (
+            <div className="space-y-4">
+              <div
+                className={`rounded-xl border p-4 sm:p-5 transition-colors shadow-2xs ${
+                  isDark ? "bg-[#16161a] border-white/[0.08]" : "bg-white border-black/[0.08]"
+                }`}
+              >
+                <div className="pb-3 border-b border-black/[0.06] dark:border-white/[0.06] mb-4">
+                  <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white">
+                    Convocatoria de Artículos Científicos (Call for Papers)
+                  </h3>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
+                    Invitamos a investigadores, docentes y profesionales a postular sus manuscritos científicos. Los trabajos aceptados por el comité académico serán presentados y sus autores accederán a la tarifa preferencial de Ponente ($80).
+                  </p>
+                </div>
+
+                {paperSuccess && (
+                  <div className="p-4 mb-4 rounded-xl text-xs font-medium text-emerald-800 dark:text-emerald-200 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20 flex items-start gap-2.5">
+                    <CheckCircleIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">¡Envío Exitoso!</p>
+                      <p className="mt-0.5 leading-relaxed">{paperSuccess}</p>
+                    </div>
+                  </div>
+                )}
+
+                {paperError && (
+                  <div className="p-3.5 mb-4 rounded-xl text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border border-rose-500/20 flex items-start gap-2">
+                    <ExclamationCircleIcon className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{paperError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handlePaperSubmit} className="space-y-4">
+                  {/* Título */}
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="cfp-title"
+                      className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                    >
+                      Título del Manuscrito / Paper <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      id="cfp-title"
+                      type="text"
+                      required
+                      value={paperTitle}
+                      onChange={(e) => setPaperTitle(e.target.value)}
+                      placeholder="Ej. Arquitectura Distribuida para Inferencia de Modelos LLM en el Borde"
+                      className="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-[#00345e] focus:outline-none transition-colors min-h-[44px]"
+                    />
+                  </div>
+
+                  {/* Eje Temático y Palabras Clave */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="cfp-track"
+                        className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                      >
+                        Eje Temático / Track <span className="text-rose-500">*</span>
+                      </label>
+                      <select
+                        id="cfp-track"
+                        value={paperTrack}
+                        onChange={(e) => setPaperTrack(e.target.value)}
+                        className="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-white focus:ring-2 focus:ring-[#00345e] focus:outline-none transition-colors min-h-[44px]"
+                      >
+                        <option value="Inteligencia Artificial y Modelos Fundacionales">
+                          Inteligencia Artificial y Modelos Fundacionales
+                        </option>
+                        <option value="Ciberseguridad y Redes de Comunicación">
+                          Ciberseguridad y Redes de Comunicación
+                        </option>
+                        <option value="Arquitecturas de Software y Cloud Computing">
+                          Arquitecturas de Software y Cloud Computing
+                        </option>
+                        <option value="Robótica, Automatización y Sistemas Embebidos">
+                          Robótica, Automatización y Sistemas Embebidos
+                        </option>
+                        <option value="Innovación Tecnológica y Transferencia (General)">
+                          Innovación Tecnológica y Transferencia (General)
+                        </option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="cfp-keywords"
+                        className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                      >
+                        Palabras Clave (separadas por coma)
+                      </label>
+                      <input
+                        id="cfp-keywords"
+                        type="text"
+                        value={paperKeywords}
+                        onChange={(e) => setPaperKeywords(e.target.value)}
+                        placeholder="Ej. Edge Computing, LLM, Latencia, Redes Neuronales"
+                        className="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-[#00345e] focus:outline-none transition-colors min-h-[44px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Resumen / Abstract */}
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="cfp-abstract"
+                      className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                    >
+                      Resumen Académico / Abstract (máx. 300 palabras) <span className="text-rose-500">*</span>
+                    </label>
+                    <textarea
+                      id="cfp-abstract"
+                      rows={4}
+                      required
+                      value={paperAbstract}
+                      onChange={(e) => setPaperAbstract(e.target.value)}
+                      placeholder="Describa el objetivo del estudio, metodología empleada, resultados destacados y conclusiones principales..."
+                      className="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-[#00345e] focus:outline-none transition-colors resize-none"
+                    />
+                  </div>
+
+                  {/* URL / Archivo del Manuscrito */}
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="cfp-file-url"
+                      className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                    >
+                      Enlace o Archivo PDF del Manuscrito (IEEE / Springer format) <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      id="cfp-file-url"
+                      type="url"
+                      required
+                      value={paperFileUrl}
+                      onChange={(e) => setPaperFileUrl(e.target.value)}
+                      placeholder="https://drive.google.com/... o enlace público al PDF"
+                      className="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-[#00345e] focus:outline-none transition-colors min-h-[44px]"
+                    />
+                    <p className="text-[11px] text-zinc-400">
+                      Pegue el enlace público a su PDF (Google Drive, Dropbox, ArXiv o repositorio universitario).
+                    </p>
+                  </div>
+
+                  {/* Nota de tarifa */}
+                  <div className="p-3 rounded-xl border border-[#00345e]/20 dark:border-blue-500/20 bg-[#00345e]/5 dark:bg-blue-950/20 text-xs text-[#00345e] dark:text-blue-300">
+                    <span className="font-bold">Beneficio de Aceptación:</span> Al ser aprobado por el comité científico, se le otorgará la acreditación oficial de Ponente con arancel preferencial ($80) y emisión de RIDE institucional.
+                  </div>
+
+                  {/* Botón de Enviar */}
+                  <button
+                    type="submit"
+                    disabled={paperSubmitting}
+                    className="w-full min-h-[44px] px-5 py-3 rounded-xl font-semibold text-xs sm:text-sm text-white bg-[#00345e] hover:bg-[#002747] active:bg-[#001f38] transition-all cursor-pointer shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {paperSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Enviando Artículo Científico...</span>
+                      </>
+                    ) : (
+                      <span>Enviar Artículo al Comité Editorial</span>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Sección de Calificación y Reseñas CACES */}
+          <ReviewsSection
+            type="congress"
+            id={id}
+            isEnrolledAndPaid={isPaidAttendee}
+            onOpenSurvey={() => setIsSurveyModalOpen(true)}
+            refreshKey={surveyCompleted ? 1 : 0}
+          />
         </div>
 
         {/* Columna Derecha (1/3): Ficha de Inscripción y Sede (Sticky) */}
@@ -681,36 +1002,134 @@ export default function CongressDetail() {
               <div className="flex justify-between items-center">
                 <span className="text-zinc-500 dark:text-zinc-400">Sede Principal:</span>
                 <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-right truncate max-w-[180px]">
-                  Campus Huachi · FISEI
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500 dark:text-zinc-400">Certificación:</span>
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200">
-                  Digital Oficial UTA
+                  {congress.lugar_sede || "Campus Huachi · FISEI"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-zinc-500 dark:text-zinc-400">Acreditación:</span>
                 <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                  Horas de Capacitación
+                  {congress.duracion_horas ? `${congress.duracion_horas} Horas Académicas` : "40 Horas Acreditadas"}
                 </span>
+              </div>
+
+              {/* Barra de Aforo y Capacidad */}
+              <div className="space-y-1.5 pt-1 border-t border-black/[0.04] dark:border-white/[0.04]">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-zinc-500 dark:text-zinc-400">Aforo y Disponibilidad:</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                    {inscritos} / {cupoMaximo} ({capacityPercentage}%)
+                  </span>
+                </div>
+                <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      isQuotaExceeded
+                        ? "bg-rose-500"
+                        : capacityPercentage > 80
+                        ? "bg-amber-500"
+                        : "bg-[#00345e] dark:bg-blue-500"
+                    }`}
+                    style={{ width: `${capacityPercentage}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Aranceles de Inscripción */}
+              <div className="space-y-1.5 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block">
+                  Aranceles Oficiales
+                </span>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-zinc-600 dark:text-zinc-300">Estudiante UTA:</span>
+                  <span className="font-bold text-[#00345e] dark:text-blue-400">
+                    ${congress.costo_estudiante_uta ?? 20}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-zinc-600 dark:text-zinc-300">Profesional / Docente:</span>
+                  <span className="font-bold text-[#00345e] dark:text-blue-400">
+                    ${congress.costo_profesional ?? 50}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-zinc-600 dark:text-zinc-300">Ponente Autor:</span>
+                  <span className="font-bold text-[#00345e] dark:text-blue-400">
+                    ${congress.costo_ponente ?? 80}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Botón de Inscripción */}
-            <div>
+            {/* Botón de Inscripción / Acciones Contextuales */}
+            <div className="space-y-2">
               {isEnrolled ? (
-                <div className="w-full py-2.5 px-3 rounded-lg font-semibold text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20 text-center flex items-center justify-center gap-1.5">
-                  <CheckCircleIcon className="w-4 h-4" />
-                  <span>Inscripción Registrada</span>
+                <>
+                  <div className="w-full py-2.5 px-3 rounded-lg font-semibold text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20 text-center flex items-center justify-center gap-1.5">
+                    <CheckCircleIcon className="w-4 h-4" />
+                    <span>Inscripción Registrada</span>
+                  </div>
+
+                  {userEnrollment && (userEnrollment.status === "Pagado" || userEnrollment.status === "Facturado") ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setIsPassModalOpen(true)}
+                        className="w-full h-11 py-2.5 px-3 rounded-lg font-semibold text-xs text-white bg-[#00345e] hover:bg-[#002747] transition-all cursor-pointer shadow-xs border-0 flex items-center justify-center gap-2"
+                      >
+                        <QrCodeIcon className="w-4 h-4" />
+                        <span>Ver Credencial de Acceso con QR</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsSurveyModalOpen(true)}
+                        className="w-full h-11 py-2.5 px-3 rounded-lg font-semibold text-xs border transition-colors flex items-center justify-center gap-2 cursor-pointer border-[#00345e]/30 dark:border-blue-400/30 text-[#00345e] dark:text-blue-300 hover:bg-[#00345e]/10 dark:hover:bg-blue-900/30"
+                      >
+                        <StarIcon className="w-4 h-4 text-amber-500" />
+                        <span>Evaluar Congreso (CACES)</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsReceiptModalOpen(true)}
+                      className="w-full h-11 py-2.5 px-3 rounded-lg font-semibold text-xs text-white bg-[#00345e] hover:bg-[#002747] transition-all cursor-pointer shadow-xs border-0 flex items-center justify-center gap-2"
+                    >
+                      <DocumentArrowUpIcon className="w-4 h-4" />
+                      <span>{userEnrollment?.payment_order_url ? "Actualizar Comprobante / SRI" : "Subir Comprobante y Datos SRI"}</span>
+                    </button>
+                  )}
+                </>
+              ) : isCongressPast ? (
+                <div className="space-y-1.5">
+                  <div className="w-full py-2.5 px-3 rounded-lg font-semibold text-xs text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60 text-center">
+                    <span>Inscripciones Finalizadas</span>
+                  </div>
+                  <p className="text-[10px] text-zinc-400 dark:text-zinc-500 text-center">
+                    El congreso ha concluido. El cronograma, ponentes y memorias se encuentran disponibles para consulta pública y legalidad.
+                  </p>
+                </div>
+              ) : isQuotaExceeded ? (
+                <div className="space-y-2">
+                  <div className="w-full py-2.5 px-3 rounded-lg font-semibold text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border border-rose-500/20 text-center flex items-center justify-center gap-1.5">
+                    <ExclamationCircleIcon className="w-4 h-4 shrink-0" />
+                    <span>Convocatoria Completa / Cupos Agotados</span>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={true}
+                    title="Convocatoria completa. No hay cupos disponibles para este congreso."
+                    className="w-full h-11 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 cursor-not-allowed border border-zinc-200 dark:border-zinc-700/60 flex items-center justify-center gap-2"
+                  >
+                    <span>Inscribirme al Congreso (Agotado)</span>
+                  </button>
                 </div>
               ) : (
                 <button
                   type="button"
                   onClick={handleEnroll}
                   disabled={enrolling}
-                  className="w-full py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-white bg-[#00345e] hover:bg-[#002747] active:bg-[#001f38] transition-all cursor-pointer shadow-xs border-0 flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full h-11 py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm text-white bg-[#00345e] hover:bg-[#002747] active:bg-[#001f38] transition-all cursor-pointer shadow-xs border-0 flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {enrolling ? (
                     <>
@@ -751,10 +1170,30 @@ export default function CongressDetail() {
           setIsModalOpen(false);
           setEnrollmentData(null);
           setEnrollmentError(null);
+          checkEnrollment();
         }}
         enrollmentData={enrollmentData}
         courseName={congress?.nombre || "Congreso Internacional"}
         error={enrollmentError}
+      />
+
+      {/* Modal para Subir Comprobante y Registrar Datos SRI */}
+      <PaymentReceiptModal
+        isOpen={isReceiptModalOpen}
+        onClose={() => setIsReceiptModalOpen(false)}
+        enrollment={userEnrollment || (enrollmentData?.data ? enrollmentData.data : { id_congress: id, congress_title: congress?.nombre })}
+        onSuccess={() => {
+          checkEnrollment();
+        }}
+      />
+
+      {/* Modal de Evaluación de Calidad Académica CACES */}
+      <SurveyModal
+        isOpen={isSurveyModalOpen}
+        onClose={() => setIsSurveyModalOpen(false)}
+        congressId={id}
+        congressTitle={congress?.nombre}
+        onSuccess={() => setSurveyCompleted(true)}
       />
     </div>
   );

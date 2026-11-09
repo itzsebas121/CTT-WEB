@@ -7,3 +7,6 @@ export { default as ConfirmDialog } from './ConfirmDialog';
 export { default as SessionTimer } from './SessionTimer';
 export { default as RoleSelectionModal } from './RoleSelection';
 export { default as PdfUploadModal } from './DocumentUpload';
+export { default as PaymentReceiptModal } from './PaymentReceiptModal';
+export { default as SurveyModal } from './SurveyModal';
+export { default as ReviewsSection } from './ReviewsSection';

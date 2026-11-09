@@ -7,6 +7,7 @@ import {
   EyeIcon,
   AcademicCapIcon,
   CheckCircleIcon,
+  ExclamationCircleIcon,
   QueueListIcon,
   Squares2X2Icon,
 } from '@heroicons/react/24/outline';
@@ -357,6 +358,10 @@ export default function CongresosDisponibles() {
             const cid = c.id_congreso || c.id;
             const alreadyEnrolled = isEnrolled(cid);
             const isThisEnrolling = enrollingId === cid;
+            const cupoMaximo = Number(c.cupo_maximo || 250);
+            const inscritos = Number(c.inscritos ?? c.total_inscritos ?? c.total_enrolled ?? 0);
+            const capacityPercentage = cupoMaximo > 0 ? Math.min(Math.round((inscritos / cupoMaximo) * 100), 100) : 0;
+            const isQuotaExceeded = cupoMaximo > 0 && inscritos >= cupoMaximo;
 
             return (
               <div
@@ -414,6 +419,28 @@ export default function CongresosDisponibles() {
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
                       {c.descripcion_general || 'Sin descripción disponible.'}
                     </p>
+
+                    {/* Barra de Aforo y Capacidad */}
+                    <div className="space-y-1 pt-1 border-t border-black/[0.04] dark:border-white/[0.04]">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-zinc-500 dark:text-zinc-400">Aforo:</span>
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                          {inscritos} / {cupoMaximo} ({capacityPercentage}%)
+                        </span>
+                      </div>
+                      <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ${
+                            isQuotaExceeded
+                              ? 'bg-rose-500'
+                              : capacityPercentage > 80
+                              ? 'bg-amber-500'
+                              : 'bg-[#00345e] dark:bg-blue-500'
+                          }`}
+                          style={{ width: `${capacityPercentage}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -437,6 +464,14 @@ export default function CongresosDisponibles() {
                     <span className="inline-flex items-center gap-1 py-1.5 px-3 rounded-lg text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20">
                       <CheckCircleIcon className="w-3.5 h-3.5" />
                       Inscrito
+                    </span>
+                  ) : isQuotaExceeded ? (
+                    <span
+                      title="Convocatoria Completa / Cupos Agotados"
+                      className="inline-flex items-center gap-1 py-1.5 px-2.5 rounded-lg text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-500/20 cursor-not-allowed"
+                    >
+                      <ExclamationCircleIcon className="w-3.5 h-3.5 shrink-0" />
+                      <span>Agotado</span>
                     </span>
                   ) : (
                     <button
@@ -488,6 +523,10 @@ export default function CongresosDisponibles() {
                   const cid = c.id_congreso || c.id;
                   const alreadyEnrolled = isEnrolled(cid);
                   const isThisEnrolling = enrollingId === cid;
+                  const cupoMaximo = Number(c.cupo_maximo || 250);
+                  const inscritos = Number(c.inscritos ?? c.total_inscritos ?? c.total_enrolled ?? 0);
+                  const capacityPercentage = cupoMaximo > 0 ? Math.min(Math.round((inscritos / cupoMaximo) * 100), 100) : 0;
+                  const isQuotaExceeded = cupoMaximo > 0 && inscritos >= cupoMaximo;
 
                   return (
                     <tr
@@ -501,9 +540,23 @@ export default function CongresosDisponibles() {
                         <span className="font-semibold text-zinc-900 dark:text-white block truncate" title={c.nombre}>
                           {c.nombre}
                         </span>
-                        <span className="text-[11px] text-zinc-400 line-clamp-1">
-                          {c.descripcion_general || 'Sin descripción'}
-                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[11px] text-zinc-400">
+                            Aforo: {inscritos}/{cupoMaximo} ({capacityPercentage}%)
+                          </span>
+                          <div className="w-16 bg-zinc-200 dark:bg-zinc-800 rounded-full h-1 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                isQuotaExceeded
+                                  ? 'bg-rose-500'
+                                  : capacityPercentage > 80
+                                  ? 'bg-amber-500'
+                                  : 'bg-[#00345e] dark:bg-blue-500'
+                              }`}
+                              style={{ width: `${capacityPercentage}%` }}
+                            />
+                          </div>
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[#00345e]/10 dark:bg-blue-400/20 text-[#00345e] dark:text-blue-300">
@@ -534,6 +587,14 @@ export default function CongresosDisponibles() {
                           {alreadyEnrolled ? (
                             <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20">
                               Inscrito
+                            </span>
+                          ) : isQuotaExceeded ? (
+                            <span
+                              title="Convocatoria Completa / Cupos Agotados"
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-500/20 cursor-not-allowed"
+                            >
+                              <ExclamationCircleIcon className="w-3.5 h-3.5" />
+                              Agotado
                             </span>
                           ) : (
                             <button

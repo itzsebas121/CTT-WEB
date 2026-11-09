@@ -15,7 +15,9 @@ import Dashboard from './pages/application/Dashboard'
 import Cursos from './pages/application/Cursos'
 import CursosInscritos from './pages/application/CursosInscritos'
 import CongresosDisponibles from './pages/application/CongresosDisponibles'
+import OfertaAcademica from './pages/application/OfertaAcademica'
 import Ordenes from './pages/application/Ordenes'
+import Perfil from './pages/application/Perfil'
 import { useSessionExpiration } from './hooks/useSessionExpiration'
 import { isAuthenticated } from './utils/auth'
 import { useDashboardTheme } from './context/DashboardThemeContext'
@@ -47,7 +49,9 @@ function App() {
             <Route path="/courses" element={<Courses />} />
             <Route path="/events" element={<Events />} />
             <Route path="/course/:id" element={<CourseDetail />} />
+            <Route path="/curso/:id" element={<CourseDetail />} />
             <Route path="/congreso/:id" element={<CongressDetail />} />
+            <Route path="/congress/:id" element={<CongressDetail />} />
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/contact" element={<Contact />} />
 
@@ -60,15 +64,19 @@ function App() {
                 </PrivateRoute>
               }
             >
-              <Route index element={<Navigate to="/dashboard/cursos/disponibles" replace />} />  
-              <Route path="cursos/disponibles" element={<Cursos />} />
+              <Route index element={<Navigate to="/dashboard/oferta" replace />} />  
+              <Route path="oferta" element={<OfertaAcademica />} />
+              <Route path="cursos/disponibles" element={<Navigate to="/dashboard/oferta?tab=cursos" replace />} />
+              <Route path="congresos/disponibles" element={<Navigate to="/dashboard/oferta?tab=congresos" replace />} />
               <Route path="cursos/inscrito" element={<CursosInscritos />} />
-              <Route path="congresos/disponibles" element={<CongresosDisponibles />} />
               <Route path="ordenes/pendientes" element={<Ordenes type="pendientes" />} />
               <Route path="ordenes/completadas" element={<Ordenes type="completadas" />} />
+              <Route path="perfil" element={<Perfil />} />
               <Route path="curso/:id" element={<CourseDetail />} />
+              <Route path="course/:id" element={<CourseDetail />} />
               <Route path="congreso/:id" element={<CongressDetail />} />
-              <Route path="*" element={<Navigate to="/dashboard/cursos/disponibles" replace />} />
+              <Route path="congress/:id" element={<CongressDetail />} />
+              <Route path="*" element={<Navigate to="/dashboard/oferta" replace />} />
             </Route>
 
             <Route path="*" element={<Home />} />

@@ -22,6 +22,21 @@ export default function CourseSidebar({ course, onEnroll, enrolling }) {
   const prices = req.prices || [];
   const minPrice = prices.length > 0 ? Math.min(...prices.map((p) => p.amount)) : null;
 
+  // Validación de vigencia (Cursos con fecha límite expirada no admiten nuevas matrículas)
+  const isRegistrationClosed = (() => {
+    if (!registration.endDate) return false;
+    try {
+      const parts = registration.endDate.split("-");
+      if (parts.length === 3) {
+        const end = new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59);
+        return end < new Date();
+      }
+      return new Date(registration.endDate + "T23:59:59") < new Date();
+    } catch {
+      return false;
+    }
+  })();
+
   const formatDate = (dateString) => {
     if (!dateString) return "Por definir";
     try {
@@ -93,8 +108,17 @@ export default function CourseSidebar({ course, onEnroll, enrolling }) {
           </p>
         </div>
 
-        {/* Botón de Inscripción CTA */}
-        {onEnroll && (
+        {/* Botón de Inscripción CTA o Aviso de Convocatoria Finalizada */}
+        {isRegistrationClosed ? (
+          <div className="w-full py-2.5 px-3 rounded-lg text-center bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60">
+            <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-300 block">
+              Inscripciones Finalizadas
+            </span>
+            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 block mt-0.5">
+              Convocatoria concluida · Temario disponible para consulta
+            </span>
+          </div>
+        ) : onEnroll && (
           <button
             type="button"
             onClick={onEnroll}

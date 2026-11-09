@@ -111,3 +111,30 @@ export const register = async (identification, first_name, second_name, first_la
     throw new Error('Error de red o servidor inalcanzable.');
   }
 };
+
+/**
+ * Actualiza los datos de facturación SRI del usuario autenticado
+ * @param {number} userId - ID del usuario de plataforma
+ * @param {Object} billingData - Datos SRI (billing_identification, billing_name, billing_address, billing_phone, billing_email)
+ * @returns {Promise<Object>}
+ */
+export const updateUserBilling = async (userId, billingData) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No se encontró sesión activa.');
+  }
+
+  try {
+    const response = await api.put(`/users/${userId}/billing`, billingData, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response?.data?.detail) {
+      throw new Error(error.response.data.detail);
+    }
+    throw new Error('Error al actualizar datos de facturación.');
+  }
+};

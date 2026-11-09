@@ -256,3 +256,62 @@ export const uploadPaymentReceiptTemp = async (enrollmentId, file) => {
     throw error;
   }
 };
+
+
+/**
+ * Genera la orden de pago oficial de la UTA conectándose a la API financiera institucional.
+ * @param {number|string} enrollmentId
+ */
+export const generateUtaPaymentOrder = async (enrollmentId) => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No se encontró token de autenticación");
+
+  const response = await fetch(`${API_URL}/enrollments/${enrollmentId}/uta/generate-order`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    let msg = "Error al generar orden de pago UTA";
+    try {
+      const errData = await response.json();
+      if (errData?.detail) msg = errData.detail;
+    } catch {}
+    throw new Error(msg);
+  }
+
+  return await response.json();
+};
+
+/**
+ * Descarga el PDF de la orden de pago oficial de la UTA.
+ * @param {number|string} enrollmentId
+ */
+export const downloadUtaPaymentOrder = async (enrollmentId) => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_URL}/enrollments/${enrollmentId}/payment-order/download`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!response.ok) {
+    let msg = "No se pudo descargar la orden de pago oficial.";
+    try {
+      const err = await response.json();
+      if (err?.detail) msg = err.detail;
+    } catch {}
+    throw new Error(msg);
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Orden_Pago_UTA_${String(enrollmentId).padStart(6, "0")}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+};

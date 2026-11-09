@@ -14,7 +14,8 @@ import {
   HomeIcon,
   ArrowLeftOnRectangleIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 
 export default function Menu({ isCollapsed = false, onToggleCollapse }) {
@@ -25,8 +26,12 @@ export default function Menu({ isCollapsed = false, onToggleCollapse }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = getUser();
-    setUser(userData);
+    const handleAuthChange = () => {
+      setUser(getUser());
+    };
+    handleAuthChange();
+    window.addEventListener('authChange', handleAuthChange);
+    return () => window.removeEventListener('authChange', handleAuthChange);
   }, []);
 
   const handleLogoutConfirm = () => {
@@ -58,19 +63,14 @@ export default function Menu({ isCollapsed = false, onToggleCollapse }) {
       group: 'Área Académica',
       items: [
         {
-          name: 'Cursos Disponibles',
-          path: '/dashboard/cursos/disponibles',
-          icon: BookOpenIcon
+          name: 'Oferta Académica',
+          path: '/dashboard/oferta',
+          icon: AcademicCapIcon
         },
         {
-          name: 'Cursos Inscritos',
+          name: 'Mis Inscripciones',
           path: '/dashboard/cursos/inscrito',
           icon: CheckCircleIcon
-        },
-        {
-          name: 'Congresos Disponibles',
-          path: '/dashboard/congresos/disponibles',
-          icon: AcademicCapIcon
         }
       ]
     },
@@ -86,6 +86,11 @@ export default function Menu({ isCollapsed = false, onToggleCollapse }) {
           name: 'Órdenes Completadas',
           path: '/dashboard/ordenes/completadas',
           icon: DocumentCheckIcon
+        },
+        {
+          name: 'Mi Perfil',
+          path: '/dashboard/perfil',
+          icon: UserIcon
         }
       ]
     }
@@ -225,9 +230,17 @@ export default function Menu({ isCollapsed = false, onToggleCollapse }) {
                 : 'bg-zinc-50 border-black/[0.06] hover:bg-zinc-100/80'
             }`}
           >
-            <div className="flex items-center gap-2.5 min-w-0">
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpenMobile(false);
+                navigate('/dashboard/perfil');
+              }}
+              className="flex items-center gap-2.5 min-w-0 flex-1 text-left cursor-pointer border-0 bg-transparent p-0 group"
+              title="Ir a Mi Perfil"
+            >
               <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-[11px] flex-shrink-0 shadow-xs border ${
+                className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-[11px] flex-shrink-0 shadow-xs border transition-transform group-hover:scale-105 ${
                   isDark
                     ? 'bg-zinc-800 text-zinc-200 border-white/10'
                     : 'bg-[#00345e] text-white border-[#00345e]/20'
@@ -238,13 +251,16 @@ export default function Menu({ isCollapsed = false, onToggleCollapse }) {
 
               {!isCollapsed && (
                 <div className="min-w-0 flex-1 truncate text-left">
-                  <p
-                    className={`text-[10px] font-semibold uppercase tracking-wider leading-none ${
-                      isDark ? 'text-zinc-500' : 'text-zinc-400'
-                    }`}
-                  >
-                    Estudiante
-                  </p>
+                  <div className="flex items-center gap-1">
+                    <p
+                      className={`text-[10px] font-semibold uppercase tracking-wider leading-none ${
+                        isDark ? 'text-zinc-500' : 'text-zinc-400'
+                      }`}
+                    >
+                      Estudiante
+                    </p>
+                    <span className="text-[10px] text-[#00345e] dark:text-blue-400 font-medium">· Mi Perfil</span>
+                  </div>
                   <p
                     className={`text-xs font-medium truncate mt-0.5 ${
                       isDark ? 'text-zinc-300' : 'text-zinc-800'
@@ -254,13 +270,13 @@ export default function Menu({ isCollapsed = false, onToggleCollapse }) {
                   </p>
                 </div>
               )}
-            </div>
+            </button>
 
             {!isCollapsed && (
               <button
                 type="button"
                 onClick={() => setShowLogoutConfirm(true)}
-                className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer border-0 bg-transparent flex-shrink-0"
+                className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer border-0 bg-transparent flex-shrink-0 ml-1"
                 title="Cerrar Sesión"
                 aria-label="Cerrar Sesión"
               >
