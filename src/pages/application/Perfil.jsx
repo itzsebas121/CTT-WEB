@@ -1187,6 +1187,9 @@ export default function Perfil() {
                     "Programa Académico";
                   const rawStatus = (item.status || "INTERESADO").toUpperCase();
                   const isPaid = rawStatus === "PAGADO" || rawStatus === "FACTURADO";
+                  const isOrderGenerated =
+                    rawStatus === "ORDEN_GENERADA" ||
+                    rawStatus === "GENERADA LA ORDEN";
                   const hasReceiptUploaded =
                     Boolean(item.payment_order_url) &&
                     item.payment_order_url !== "local";
